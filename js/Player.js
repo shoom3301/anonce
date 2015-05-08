@@ -111,7 +111,7 @@ var Player = function(scene, render, params){
         }
         //Определение вектора по вертикали
         if(newpos.y != this.y){
-            this.vector.vertical = newpos.y-this.y>0?'down':'up';
+            this.vector.vertical = newpos.y-this.y>0?'bottom':'top';
         }
 
         //При приземлении на плоскость
@@ -164,7 +164,7 @@ var Player = function(scene, render, params){
             var direction = '';
             switch (char){
                 case 'w':
-                    direction = 'top';
+                    th.jump();
                     break;
                 case 'a':
                     direction = 'left';
@@ -214,6 +214,43 @@ var Player = function(scene, render, params){
         });
     };
 
+    this.checkConflict = function (newpos) {
+        if(this.bottomBlock){
+            if(newpos.x+this.width<this.bottomBlock[0] || newpos.x>this.bottomBlock[0]+this.scene.cellSize){
+                delete this.bottomBlock;
+                this.inPlace = false;
+
+            }
+        }
+        for(var i=0; i<this.scene.walls.length; i++){
+            var wall = this.scene.walls[i];
+            var check = RectsOverlap(newpos.x, newpos.y, this.width, this.height, wall[0], wall[1], this.scene.cellSize, this.scene.cellSize);
+            if(check){
+                //console.log(this.vector, {x: this.x, y: this.y}, newpos, check);
+                var hor = check.left || check.right;
+                var ver = check.top || check.bottom;
+                if(this.y>=newpos.y && hor<ver){
+                    if(this.vector.horizontal == 'right' && check.left){
+                        this.x = wall[0]-this.width;
+                    }else if(this.vector.horizontal == 'left' && check.right){
+                        this.x = wall[0]+this.scene.cellSize;
+                    }
+                }else{
+                    if(this.vector.vertical == 'bottom' && check.top){
+                        this.y = wall[1]-this.height;
+                        this.inPlace = true;
+                        this.bottomBlock = wall;
+                    }else if(this.vector.vertical == 'top' && check.bottom){
+                        this.y = wall[1]+this.scene.cellSize;
+                        this.stopJump();
+                    }
+                }
+                return true;
+            }
+        }
+
+        return false;
+    };
     /**
      * Движение игрока. Изменяет позицию по выбранной оси с соответствующей скоростью
      * @param {String} direction направление движения
@@ -239,11 +276,17 @@ var Player = function(scene, render, params){
 
         //Если можно двигаться
         if(newpos && this.checkMove(newpos)){
-            this.x = newpos.x;
-            this.y = newpos.y;
-            return true;
-        }
 
+            if(this.checkConflict(newpos)){
+                this.clearVector();
+                return false;
+            }else{
+                this.x = newpos.x;
+                this.y = newpos.y;
+                return true;
+            }
+        }
+        this.clearVector();
         return false;
     };
 
@@ -351,5 +394,10 @@ var Player = function(scene, render, params){
             this.vSpeed = this.vSpeed+1+(this.vSpeed*3/100);
             if(this.vSpeed >= this.maxSpeed) this.vSpeed = this.maxSpeed;
         }
+    };
+
+    this.clearVector = function(){
+        this.vector.horizontal = 0;
+        this.vector.vertical = 0;
     };
 };

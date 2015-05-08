@@ -164,7 +164,16 @@ function base64src(base64){
 }
 
 /**
- * @return {Array}
+ * Перекрытие двух прямоугольников
+ * @param {Number} x1
+ * @param {Number} y1
+ * @param {Number} w1
+ * @param {Number} h1
+ * @param {Number} x2
+ * @param {Number} y2
+ * @param {Number} w2
+ * @param {Number} h2
+ * @return {Array | Boolean} пересечение или их отсутствие
  */
 function RectsOverlap(x1, y1, w1, h1, x2, y2, w2, h2){
     var res = {};
