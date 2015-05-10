@@ -163,65 +163,37 @@ function base64src(base64){
     return 'data:image/jpeg;base64,'+base64;
 }
 
-/**
- * Перекрытие двух прямоугольников
- * @param {Number} x1
- * @param {Number} y1
- * @param {Number} w1
- * @param {Number} h1
- * @param {Number} x2
- * @param {Number} y2
- * @param {Number} w2
- * @param {Number} h2
- * @return {Array | Boolean} пересечение или их отсутствие
- */
-function RectsOverlap(x1, y1, w1, h1, x2, y2, w2, h2){
-    var res = {};
-    var overlap = 0;
-    if((x1+w1 > x2 && x1+w1<x2+w2) || (x2+w2>x1 && x1+w1>x2)){
-        if(x1+w1-x2 < x2+w2-x1){
-            res.left = x1+w1-x2;
-        }else{
-            res.right = x2+w2-x1;
-        }
-        overlap++;
-    }
-    if((y1+h1 > y2 && y1 < y2+h2) || (y2+h2>y1 && y1+h1>y2)){
-        if(y2+h2-y1 < y1+h1-y2){
-            res.bottom = y2+h2-y1;
-        }else{
-            res.top = y1+h1-y2;
-        }
-        overlap++;
-    }
-    if(overlap==2){
-        return res;
-    }else{
-        return false;
-    }
-}
+function colCheck(shapeA, shapeB) {
+    // get the vectors to check against
+    var vX = (shapeA.x + (shapeA.width / 2)) - (shapeB.x + (shapeB.width / 2)),
+        vY = (shapeA.y + (shapeA.height / 2)) - (shapeB.y + (shapeB.height / 2)),
+    // add the half widths and half heights of the objects
+        hWidths = (shapeA.width / 2) + (shapeB.width / 2),
+        hHeights = (shapeA.height / 2) + (shapeB.height / 2),
+        colDir = null;
 
-function RectsOverlapX(x1, w1, x2, w2){
-    var res = null;
-    if((x1+w1 > x2 && x1+w1<x2+w2) || (x2+w2>x1 && x1+w1>x2)){
-        if(x1+w1-x2 < x2+w2-x1){
-            res = {left: x1+w1-x2};
-        }else{
-            res = {right: x2+w2-x1};
+    // if the x and y vector are less than the half width or half height, they we must be inside the object, causing a collision
+    if (Math.abs(vX) < hWidths && Math.abs(vY) < hHeights) {
+        // figures out on which side we are colliding (top, bottom, left, or right)
+        var oX = hWidths - Math.abs(vX),
+            oY = hHeights - Math.abs(vY);
+        if (oX >= oY) {
+            if (vY > 0) {
+                colDir = "t";
+                shapeA.y += oY;
+            } else {
+                colDir = "b";
+                shapeA.y -= oY;
+            }
+        } else {
+            if (vX > 0) {
+                colDir = "l";
+                shapeA.x += oX;
+            } else {
+                colDir = "r";
+                shapeA.x -= oX;
+            }
         }
     }
-
-    return res;
-}
-
-function RectsOverlapY(y1, h1, y2, h2){
-    var res = null;
-    if((y1+h1 > y2 && y1 < y2+h2) || (y2+h2>y1 && y1+h1>y2)){
-        if(y2+h2-y1 < y1+h1-y2){
-            res = {bottom: y2+h2-y1};
-        }else{
-            res = {top: y1+h1-y2};
-        }
-    }
-    return res;
+    return colDir;
 }
