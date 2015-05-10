@@ -80,11 +80,11 @@ var Player = function(scene, render, params){
      * */
     this.keyControls = function(){
         var th = this;
-        this.scene.on('keydown', function(keyCode, e){
+        this.scene.on('keydown', function(keyCode){
             th.keys[keyCode] = true;
         });
 
-        this.scene.on('keyup', function(keyCode, e){
+        this.scene.on('keyup', function(keyCode){
             th.keys[keyCode] = false;
         });
     };
@@ -146,27 +146,39 @@ var Player = function(scene, render, params){
         }
     };
 
+    /**
+     * Проверка столкновения с активными блоками
+     * */
     this.checkCollision = function(){
-        for(var i=0; i<this.scene.grid.length;i++){
-            this.scene.grid[i].check(this);
+        for(var i=0; i<this.scene.activeCells.length;i++){
+            this.scene.activeCells[i].check(this);
         }
     };
 
+    /**
+     * Открытие ворот к выходу
+     * */
     this.openGate = function(){
         this.scene.gateIsOpen = true;
     };
 
-    this.winAlpha = 0;
+    /**
+     * Победа на карте
+     * */
     this.win = function(){
-        this.winAlpha += 0.01;
-        if(this.winAlpha>=1) this.winAlpha = 1;
-        this.ctx.fillStyle = "rgba(38, 75, 99, "+this.winAlpha+")";
-        this.ctx.fillRect(0, 0, this.scene.width+this.scene.offsetX, this.scene.height+this.scene.offsetY);
-        this.ctx.font="20px Arial";
-        this.ctx.fillStyle = "#ffffff";
-        this.ctx.fillText("Ты проиграл!",this.scene.offsetX+(this.scene.width/2)-80,this.scene.offsetY+(this.scene.height/2));
+        this.scene.endScreen('Победа!', '#1051b2');
     };
 
+    /**
+     * Поражение на карте
+     * */
+    this.lose = function(){
+        this.scene.endScreen('Поражение!', '#1051b2');
+    };
+
+    /**
+     * Включаем управление, добавляем в рендеринг движение и отрисовку игрока
+     * */
     this.keyControls();
     this.addForRender(this.move);
     this.addForRender(this._render);

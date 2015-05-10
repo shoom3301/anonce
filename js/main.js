@@ -1,7 +1,7 @@
 window.addEventListener('load', function(){
 
     //матрица карты
-    var matrix = [
+    var matrix1 = [
         [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
         [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
         [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -24,27 +24,27 @@ window.addEventListener('load', function(){
     ];
 
     //сцена
-    window.scene = new Scene({
+    var scene = new Scene({
         canvas: 'scene',
         cellSize: 32,
-        matrix: matrix,
+        matrix: matrix1,
         view: {
-            width: 860,
-            height: 480
+            width: 1000,
+            height: 500
         },
         sprites: {
             yoba: 'images/yoba.png',
             wall: 'images/wall.png',
-            background: 'images/default.png',
+            passiveCells: 'images/default.png',
             gate_open: 'images/gate_open.png',
             gate_close: 'images/gate_close.png',
             thorn: 'images/thorn.png',
             bonus: 'images/bonus.png'
         },
         ready: function(){
-            this.backgroundPattern = this.ctx.createPattern(this.sprites.background, "repeat");
-
+            //Инициализируем активные блоки в матрице
             this.initMatrix({
+                //стена
                 1: {
                     name: 'wall',
                     sprite: this.sprites.wall,
@@ -61,12 +61,12 @@ window.addEventListener('load', function(){
                         }
                     }
                 },
+                //бонус
                 3: {
                     name: 'bonus',
                     sprite: this.sprites.bonus,
                     check: function(player, check){
                         if(check){
-                            this.scene.grid.remove(this);
                             this.destroy();
                             player.bonusCount--;
                             if(player.bonusCount==0){
@@ -75,6 +75,7 @@ window.addEventListener('load', function(){
                         }
                     }
                 },
+                //вороты выхода с уровня
                 5: {
                     name: 'gate',
                     check: function(player, check){
@@ -90,6 +91,7 @@ window.addEventListener('load', function(){
                         this.scene.ctx.drawImage(this.scene.sprites[this.scene.gateIsOpen?'gate_open':'gate_close'], this.x, this.y)
                     }
                 },
+                //колючка
                 7: {
                     name: 'thorn',
                     sprite: this.sprites.thorn,
@@ -104,9 +106,17 @@ window.addEventListener('load', function(){
                         } else if (check === "t") {
                             player.velY *= -1;
                         }
+
+                        if(check){
+                            player.removeForRender(player.move);
+                            player.removeForRender(player._render);
+                            player.addForRender(player.lose);
+                        }
                     }
                 }
             });
+
+            //Игрок
             var player = new Player(this, function(){
                 this.ctx.drawImage(this.scene.sprites.yoba, this.x, this.y);
             }, {

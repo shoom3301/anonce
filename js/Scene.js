@@ -6,19 +6,19 @@
  * Сцена
  * @param {Object} params параметры сцены
  * */
-var Scene = function(params){
+var Scene = function (params) {
     var th = this;
 
     //при нажатии клавиши
-    window.addEventListener('keydown', function(e){
-        for(var i=0; i<th._events.keydown.length; i++){
+    window.addEventListener('keydown', function (e) {
+        for (var i = 0; i < th._events.keydown.length; i++) {
             th._events.keydown[i](e.keyCode, e);
         }
     });
 
     //при отжатии клавиши
-    window.addEventListener('keyup', function(e){
-        for(var i=0; i<th._events.keyup.length; i++){
+    window.addEventListener('keyup', function (e) {
+        for (var i = 0; i < th._events.keyup.length; i++) {
             th._events.keyup[i](e.keyCode, e);
         }
     });
@@ -29,19 +29,27 @@ var Scene = function(params){
         'keyup': []
     };
 
+    //спрайты
     this.sprites = {};
+    //callback при загрузке всех спрайтов
     this._ready = params.ready;
+    //смещение сцены по X
     this.offsetX = 0;
+    //смещение сцены по Y
     this.offsetY = 0;
+    //открыты ли ворота выхода с уровня
     this.gateIsOpen = false;
-    this.backgroundPattern = null;
+    //смещение сцены по X
+    this.activeCells = [];
+    //фоновые ячейки
+    this.passiveCells = [];
 
     /**
      * Биндинг события
      * @param {String} event название события
      * @param {Function} func callback события
      * */
-    this.on = function(event, func){
+    this.on = function (event, func) {
         this._events[event].push(func);
         return this;
     };
@@ -51,7 +59,7 @@ var Scene = function(params){
      * @param {String} event название события
      * @param {Function} func callback события
      * */
-    this.off = function(event, func){
+    this.off = function (event, func) {
         this._events[event].remove(func);
         return this;
     };
@@ -59,18 +67,18 @@ var Scene = function(params){
     /**
      * Очистка сцены
      * */
-    this.clear = function(){
-        this.ctx.clearRect(0, 0, this.width, this.height);
+    this.clear = function () {
+        this.ctx.clearRect(0, 0, this.width + this.offsetX, this.height + this.offsetY);
     };
 
     /**
      * Перебор матрицы
      * @param {Function} func функция итерации
      * */
-    this.eachMatrix = function(func){
-        for(var i=0; i<this.matrix.length; i++){
+    this.eachMatrix = function (func) {
+        for (var i = 0; i < this.matrix.length; i++) {
             var row = this.matrix[i];
-            for(var v = 0; v<row.length; v++){
+            for (var v = 0; v < row.length; v++) {
                 var cell = row[v];
                 func.apply(this, [cell, row, v, i]);
             }
@@ -80,37 +88,42 @@ var Scene = function(params){
     /**
      * Инициализация матрицы
      * */
-    this.grid = [];
-     this.initMatrix = function(data){
+    this.initMatrix = function (data) {
         this.cells = data;
-        this.eachMatrix(function(cell, row, v, i){
+        this.eachMatrix(function (cell, row, v, i) {
             var cat = this.cells[cell];
-            if(cat) this.grid.push(new Cell(i, v, this.cellSize, this.cellSize, this, cat))
+            if (cat) {
+                this.activeCells.push(new Cell(i, v, this.cellSize, this.cellSize, this, cat))
+            } else {
+                this.passiveCells.push([this.cellSize * v, this.cellSize * i]);
+            }
         });
     };
 
     /**
      * Рисование матрицы
      * */
-    this.drawMatrix = function(){
-        this.ctx.rect(0,0,this.width+this.offsetX,this.height+this.offsetY);
-        this.ctx.fillStyle=this.backgroundPattern;
-        this.ctx.fill();
-
-        for(var i=0; i<this.grid.length;i++){
-            this.grid[i].render();
+    this.drawMatrix = function () {
+        for (var s = 0; s < this.passiveCells.length; s++) {
+            this.ctx.drawImage(this.sprites.passiveCells, this.passiveCells[s][0], this.passiveCells[s][1])
+        }
+        for (var i = 0; i < this.activeCells.length; i++) {
+            this.activeCells[i].render();
         }
     };
 
-    this.mapCenter = function(obj){
-        var offsetX = obj.x+(obj.width/2)-this.centerX;
-        var offsetY = obj.y+(obj.height/2)-this.centerY;
+    /**
+     * Центрирование карты относительно объекта
+     * */
+    this.mapCenter = function (obj) {
+        var offsetX = obj.x + (obj.width / 2) - this.width / 2;
+        var offsetY = obj.y + (obj.height / 2) - this.height / 2;
 
-        if(offsetX<0) offsetX = 0;
-        if(offsetX>this.maxXoffset) offsetX = this.maxXoffset;
+        if (offsetX < 0) offsetX = 0;
+        if (offsetX > this.mapWidth - this.width) offsetX = this.mapWidth - this.width;
 
-        if(offsetY<0) offsetY = 0;
-        if(offsetY>=this.maxYoffset) offsetY = this.maxYoffset;
+        if (offsetY < 0) offsetY = 0;
+        if (offsetY > this.mapHeight - this.height) offsetY = this.mapHeight - this.height;
 
         this.offsetX = offsetX;
         this.offsetY = offsetY;
@@ -118,23 +131,29 @@ var Scene = function(params){
         this.ctx.translate(-this.offsetX, -this.offsetY);
     };
 
-    this.ready = function(){
+    /**
+     * Callback готовности сцены
+     * */
+    this.ready = function () {
         //2D контекст
         this.ctx = document.getElementById(params.canvas).getContext('2d');
 
-        if(params.cellSize){
+        if (params.cellSize) {
             //Размер ячейки в матрице
             this.cellSize = params.cellSize;
         }
 
-        if(params.matrix){
+        if (params.matrix) {
             //Матрица
             this.matrix = params.matrix;
-            this.mapWidth = this.matrix[0].length*this.cellSize;
-            this.mapHeight = this.matrix.length*this.cellSize;
+            //Ширина карты
+            this.mapWidth = this.matrix[0].length * this.cellSize;
+            //Высота карты
+            this.mapHeight = this.matrix.length * this.cellSize;
         }
 
-        if(params.view){
+        if (params.view) {
+            //Видимая область карты
             this.view = params.view;
             this.ctx.canvas.width = this.view.width;
             this.ctx.canvas.height = this.view.height;
@@ -145,24 +164,31 @@ var Scene = function(params){
         //Ширина сцены
         this.width = this.ctx.canvas.width;
 
-        this.centerX = this.width/2;
-        this.centerY = this.height/2;
-
-        this.maxXoffset = this.mapWidth-this.width;
-        this.maxYoffset = this.mapHeight-this.height;
-
         this._ready();
     };
 
-    if(params.sprites){
+    /**
+     * Заставка конца игры
+     * */
+    this.endScreen = function (text, fill) {
+        this.ctx.fillStyle = fill;
+        this.ctx.fillRect(0, 0, this.width + this.offsetX, this.height + this.offsetY);
+        this.ctx.font = "32px Arial";
+        this.ctx.fillStyle = "#ffffff";
+        this.ctx.textAlign = "center";
+        this.ctx.fillText(text, this.offsetX + (this.width / 2), this.offsetY + (this.height / 2));
+    };
+
+    //закрузка спрайтов
+    if (params.sprites) {
         this.spritesInLoad = 0;
-        for(var v in params.sprites){
-            if(params.sprites.hasOwnProperty(v)){
+        for (var v in params.sprites) {
+            if (params.sprites.hasOwnProperty(v)) {
                 th.spritesInLoad++;
-                new Sprite(params.sprites[v], v, function(){
+                new Sprite(params.sprites[v], v, function () {
                     th.spritesInLoad--;
                     th.sprites[this.name] = this.img;
-                    if(th.spritesInLoad==0){
+                    if (th.spritesInLoad == 0) {
                         th.ready();
                     }
                 });
