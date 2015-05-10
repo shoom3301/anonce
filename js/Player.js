@@ -45,6 +45,7 @@ var Player = function(scene, render, params){
     this.ctx = this.scene.ctx;
     //Функции для рендеринга
     this.forRender = [];
+    this.bonusCount = params.bonusCount;
 
     /**
      * Рендеринг игрока
@@ -145,50 +146,9 @@ var Player = function(scene, render, params){
         }
     };
 
-    /**
-     * Проверка столкновений со стенами
-     * */
     this.checkCollision = function(){
-        for(var i=0; i<this.scene.walls.length; i++){
-            var dir = colCheck(this, this.scene.walls[i]);
-
-            if (dir === "l" || dir === "r") {
-                this.velX = 0;
-                this.jumping = false;
-            } else if (dir === "b") {
-                this.grounded = true;
-                this.jumping = false;
-            } else if (dir === "t") {
-                this.velY *= -1;
-            }
-        }
-    };
-
-    this.checkItems = function(){
-        for(var i=0; i<this.scene.items.length; i++){
-            var item = this.scene.items[i];
-            if(colCheck(this,item)){
-                this.scene.items.remove(item);
-                item.destroy();
-                if(this.scene.items.length==0){
-                    this.openGate();
-                }
-            }
-        }
-    };
-
-    this.checkGates = function(){
-        for(var i=0; i<this.scene.gates.length; i++){
-            var item = this.scene.gates[i];
-            var box = {x: this.x, y: this.y, width: this.width, height: this.height};
-            if(colCheck(box,item)){
-                if(this.scene.gateIsOpen){
-                    this.removeForRender(this.move);
-                    this.removeForRender(this.checkItems);
-                    this.removeForRender(this._render);
-                    this.addForRender(this.win);
-                }
-            }
+        for(var i=0; i<this.scene.grid.length;i++){
+            this.scene.grid[i].check(this);
         }
     };
 
@@ -209,7 +169,5 @@ var Player = function(scene, render, params){
 
     this.keyControls();
     this.addForRender(this.move);
-    this.addForRender(this.checkItems);
-    this.addForRender(this.checkGates);
     this.addForRender(this._render);
 };

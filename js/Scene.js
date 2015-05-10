@@ -31,12 +31,10 @@ var Scene = function(params){
 
     this.sprites = {};
     this._ready = params.ready;
-    this.walls = [];
-    this.items = [];
-    this.gates = [];
     this.offsetX = 0;
     this.offsetY = 0;
     this.gateIsOpen = false;
+    this.backgroundPattern = null;
 
     /**
      * Биндинг события
@@ -74,7 +72,7 @@ var Scene = function(params){
             var row = this.matrix[i];
             for(var v = 0; v<row.length; v++){
                 var cell = row[v];
-                func(cell, row, v, i);
+                func.apply(this, [cell, row, v, i]);
             }
         }
     };
@@ -82,16 +80,12 @@ var Scene = function(params){
     /**
      * Инициализация матрицы
      * */
-    this.initMatrix = function(data){
-        this.cellNames = data;
+    this.grid = [];
+     this.initMatrix = function(data){
+        this.cells = data;
         this.eachMatrix(function(cell, row, v, i){
-            if(cell == th.cellNames.wall){
-                th.walls.push(new Cell(i, v, th.cellSize, th.cellSize, th));
-            }else if(cell == th.cellNames.item ){
-                th.items.push(new Cell(i, v, th.cellSize, th.cellSize, th));
-            }else if(cell == th.cellNames.gate){
-                th.gates.push(new Cell(i, v, th.cellSize, th.cellSize, th));
-            }
+            var cat = this.cells[cell];
+            if(cat) this.grid.push(new Cell(i, v, this.cellSize, this.cellSize, this, cat))
         });
     };
 
@@ -99,22 +93,13 @@ var Scene = function(params){
      * Рисование матрицы
      * */
     this.drawMatrix = function(){
-        this.eachMatrix(function(cell, row, v, i){
-            switch (cell){
-                case th.cellNames.wall:
-                    th.ctx.drawImage(th.sprites.wall, v*th.cellSize, i*th.cellSize);
-                    break;
-                case th.cellNames.item:
-                    th.ctx.drawImage(th.sprites.bonus, v*th.cellSize, i*th.cellSize);
-                    break;
-                case th.cellNames.gate:
-                    th.ctx.drawImage(th.sprites[th.gateIsOpen?'gate_open':'gate_close'], v*th.cellSize, i*th.cellSize);
-                    break;
-                default:
-                    th.ctx.drawImage(th.sprites.background, v*th.cellSize, i*th.cellSize);
-                    break;
-            }
-        });
+        this.ctx.rect(0,0,this.width+this.offsetX,this.height+this.offsetY);
+        this.ctx.fillStyle=this.backgroundPattern;
+        this.ctx.fill();
+
+        for(var i=0; i<this.grid.length;i++){
+            this.grid[i].render();
+        }
     };
 
     this.mapCenter = function(obj){
