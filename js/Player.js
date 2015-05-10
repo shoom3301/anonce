@@ -91,71 +91,6 @@ var Player = function(scene, render, params){
     };
 
     /**
-     * Проверка, можно ли двигаться, если следующий шаг будет в стену, то корректирует его
-     * @param newpos {Object} следующий шаг (координаты)
-     * @return {Boolean} можно ли двигаться дальше
-     * */
-    this.checkMove = function(newpos){
-        //Вылазит ли за границы вправо
-        var moreRight = newpos.x+this.width > this.scene.width;
-        //Вылазит ли за границы влево
-        var moreLeft = newpos.x-this.width+this.offsetX < 0;
-        //Вылазит ли за границы вниз
-        var moreBottom = newpos.y+this.height > this.scene.height;
-        //Вылазит ли за границы вверх
-        var moreUp = newpos.y+this.offsetY < this.height;
-
-        //Определение вектора по горизонтали
-        if(newpos.x != this.x){
-            this.vector.horizontal = newpos.x-this.x>=0?'right':'left';
-        }
-        //Определение вектора по вертикали
-        if(newpos.y != this.y){
-            this.vector.vertical = newpos.y-this.y>0?'bottom':'top';
-        }
-
-        //При приземлении на плоскость
-        if(moreBottom) this.inPlace = true;
-
-        //Если след. шаг выходит за границы
-        if(moreRight || moreLeft || moreBottom || moreUp){
-            //Если след. шаг выходит за границы справа, делаем след. шаг ровно до границы справа
-            if(moreRight){
-                newpos.x = this.scene.width-this.width;
-                return true;
-            //Если след. шаг выходит за границы слева, делаем след. шаг ровно до границы слева
-            }else if(moreLeft){
-                newpos.x = this.width-this.offsetX;
-                return true;
-            //Если след. шаг выходит за границы вниз, делаем след. шаг ровно до границы снизу и запоминаем, что мы приземлились
-            }else if(moreBottom){
-                newpos.y = this.scene.height-this.height;
-                this.inPlace = true;
-                return true;
-            //Если след. шаг выходит за границы сверху, делаем след. шаг ровно до границы сверху и прекращаем прыжок
-            }else if(moreUp){
-                newpos.y = this.height-this.offsetY;
-                this.stopJump();
-                return true;
-            }
-
-            //Еще раз проверка, чтобы игрок оставался в пределах границ
-            if(newpos.y+this.height > this.scene.height){
-                newpos.y = this.scene.height-this.height;
-                return true;
-            }
-            if(newpos.y+this.height < this.height){
-                newpos.y = this.height;
-                return true;
-            }
-        }else{
-            return true;
-        }
-
-        return false;
-    };
-
-    /**
      * Включение управления клавишами
      * */
     this.doMove = function(){
@@ -214,19 +149,26 @@ var Player = function(scene, render, params){
         });
     };
 
-    this.checkConflict = function (newpos) {
-        if(this.bottomBlock){
-            if(newpos.x+this.width<this.bottomBlock[0] || newpos.x>this.bottomBlock[0]+this.scene.cellSize){
-                delete this.bottomBlock;
-                this.inPlace = false;
+    this.checkConflict = function (o, val) {
+        var newpos = {x: this.x, y: this.y};
 
+        if(o=='x'){
+            if(this.bottomBlock){
+                if(newpos.x+this.width<this.bottomBlock[0] || newpos.x>this.bottomBlock[0]+this.scene.cellSize){
+                    delete this.bottomBlock;
+                    this.inPlace = false;
+
+                }
             }
+            newpos.x = val;
+        }else{
+            newpos.y = val;
         }
+
         for(var i=0; i<this.scene.walls.length; i++){
             var wall = this.scene.walls[i];
             var check = RectsOverlap(newpos.x, newpos.y, this.width, this.height, wall[0], wall[1], this.scene.cellSize, this.scene.cellSize);
             if(check){
-                //console.log(this.vector, {x: this.x, y: this.y}, newpos, check);
                 var hor = check.left || check.right;
                 var ver = check.top || check.bottom;
                 if(this.y>=newpos.y && hor<ver){
@@ -251,43 +193,27 @@ var Player = function(scene, render, params){
 
         return false;
     };
+
     /**
      * Движение игрока. Изменяет позицию по выбранной оси с соответствующей скоростью
      * @param {String} direction направление движения
      * @return {Boolean} прошло ли движение
      * */
-    this.move = function(direction){
-        var newpos = null;
+    this.horizontalMove = function(direction){
+        var newX = this.x+(this.hSpeed*(direction=='left'?-1:1));
 
-        switch (direction){
-            case 'top':
-                newpos = {x: this.x, y: this.y-this.vSpeed};
-                break;
-            case 'left':
-                newpos = {x: this.x-this.hSpeed, y: this.y};
-                break;
-            case 'bottom':
-                newpos = {x: this.x, y: this.y+this.vSpeed};
-                break;
-            case 'right':
-                newpos = {x: this.x+this.hSpeed, y: this.y};
-                break;
+        //Определение вектора по горизонтали
+        if(newX != this.x){
+            this.vector.horizontal = newX-this.x>=0?'right':'left';
         }
 
-        //Если можно двигаться
-        if(newpos && this.checkMove(newpos)){
-
-            if(this.checkConflict(newpos)){
-                this.clearVector();
-                return false;
-            }else{
-                this.x = newpos.x;
-                this.y = newpos.y;
-                return true;
-            }
+        if(this.checkConflict('x', newX)){
+            this.clearVector();
+            return false;
+        }else{
+            this.x = newX;
+            return true;
         }
-        this.clearVector();
-        return false;
     };
 
     /**
@@ -315,7 +241,7 @@ var Player = function(scene, render, params){
                 if(this.hSpeed > this.maxSpeed) this.hSpeed = this.maxSpeed;
 
                 //Если двигаться в выбранном направлении нельзя или скорость равна 0, то останавливаемся
-                if(!this.move(this.moveXdirection) || this.hSpeed <= 0){
+                if(!this.horizontalMove(this.moveXdirection) || this.hSpeed <= 0){
                     this.stopMove();
                 }
             };
@@ -361,7 +287,7 @@ var Player = function(scene, render, params){
             var th = this;
             //Каждый кадр двигаемся вврх и уменьшаем скорость
             this.jumpUpTimer = setInterval(function(){
-                var mv = th.move('top');
+                var mv = th.verticalMove('top');
                 th.vSpeed-=1;
                 //Если не возможно выше прыгать или достигли максимума прыжка, останавливаем прыжок
                 if(th.y-startHeight <= -th.jumpMaxHeight || !mv){
@@ -390,9 +316,27 @@ var Player = function(scene, render, params){
         //во время прыжка и если игрок стоит на плоскости, гравитация не работает
         if(!this.inJump && !this.inPlace){
             //всегда стремится двигаться вниз и увеличивать скорость
-            this.move('bottom');
+            this.verticalMove('bottom');
             this.vSpeed = this.vSpeed+1+(this.vSpeed*3/100);
             if(this.vSpeed >= this.maxSpeed) this.vSpeed = this.maxSpeed;
+        }
+    };
+
+    this.verticalMove = function(direction){
+        var newY = this.y+(this.vSpeed*(direction=='top'?-1:1));
+
+        //Определение вектора по вертикали
+        if(newY != this.y){
+            this.vector.vertical = newY-this.y>0?'bottom':'top';
+        }
+
+
+        if(this.checkConflict('y', newY)){
+            this.clearVector();
+            return false;
+        }else{
+            this.y =  newY;
+            return true;
         }
     };
 

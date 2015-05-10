@@ -200,3 +200,28 @@ function RectsOverlap(x1, y1, w1, h1, x2, y2, w2, h2){
         return false;
     }
 }
+
+function RectsOverlapX(x1, w1, x2, w2){
+    var res = null;
+    if((x1+w1 > x2 && x1+w1<x2+w2) || (x2+w2>x1 && x1+w1>x2)){
+        if(x1+w1-x2 < x2+w2-x1){
+            res = {left: x1+w1-x2};
+        }else{
+            res = {right: x2+w2-x1};
+        }
+    }
+
+    return res;
+}
+
+function RectsOverlapY(y1, h1, y2, h2){
+    var res = null;
+    if((y1+h1 > y2 && y1 < y2+h2) || (y2+h2>y1 && y1+h1>y2)){
+        if(y2+h2-y1 < y1+h1-y2){
+            res = {bottom: y2+h2-y1};
+        }else{
+            res = {top: y1+h1-y2};
+        }
+    }
+    return res;
+}
