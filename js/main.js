@@ -121,7 +121,7 @@ window.addEventListener('load', function(){
                 this.ctx.drawImage(this.scene.sprites.yoba, this.x, this.y);
             }, {
                 radius: 16,
-                x: 100,
+                x: 32,
                 y: 420,
                 offsetX: 32,
                 offsetY: 32,

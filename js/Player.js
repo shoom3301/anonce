@@ -173,7 +173,7 @@ var Player = function(scene, render, params){
      * Поражение на карте
      * */
     this.lose = function(){
-        this.scene.endScreen('Поражение!', '#1051b2');
+        this.scene.endScreen('Поражение!', '#b51717');
     };
 
     /**

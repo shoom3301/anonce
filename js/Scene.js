@@ -179,6 +179,15 @@ var Scene = function (params) {
         this.ctx.fillText(text, this.offsetX + (this.width / 2), this.offsetY + (this.height / 2));
     };
 
+    this.debug = function(text){
+        this.ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        this.ctx.fillRect(this.width+this.offsetX, this.height+this.offsetY, 200, 50);
+        this.ctx.font = "14px Arial";
+        this.ctx.fillStyle = "#ffffff";
+        this.ctx.textAlign = "right";
+        this.ctx.fillText(text, this.width-200, this.offsetY+50);
+    };
+
     //закрузка спрайтов
     if (params.sprites) {
         this.spritesInLoad = 0;
