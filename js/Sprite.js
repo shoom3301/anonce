@@ -15,7 +15,7 @@ var Sprite = function(src, name, onload){
     this.name = name;
     var th = this;
     this.img.addEventListener('load', function(){
-        onload.apply(th);
+        if(onload) onload.apply(th);
     });
 };
 
