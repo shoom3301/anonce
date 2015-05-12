@@ -34,14 +34,12 @@ var sprites = {
     bonus: new Sprite('../images/bonus.png', 'bonus', on_srite_load),
     wall: new Sprite('../images/wall.png', 'wall', on_srite_load),
     gate_close: new Sprite('../images/gate_close.png', 'gate_close', on_srite_load),
-    thorn: new Sprite('../images/thorn.png', 'thorn', on_srite_load),
-    default: new Sprite('../images/default.png', 'default', on_srite_load)
+    thorn: new Sprite('../images/thorn.png', 'thorn', on_srite_load)
 };
 
 var clear_sprite = new Sprite('../images/clear.png', 'clear');
 
 var indexes = {
-    default: 0,
     wall: 1,
     bonus: 3,
     gate_close: 5,
@@ -49,7 +47,6 @@ var indexes = {
 };
 
 var sl = {
-    0: 'default',
     1: 'wall',
     3: 'bonus',
     5: 'gate_close',
@@ -71,7 +68,9 @@ function get_matrix(){
             }
         }
     }
-    console.log(JSON.stringify(matrix));
+
+    res.value = JSON.stringify(matrix);
+    res.select();
 }
 
 $(window).load(function(){
@@ -81,6 +80,24 @@ $(window).load(function(){
     var ctx = scene.getContext('2d');
     var can_draw = false;
     var clear_mode = false;
+
+    window.res = document.getElementById('res');
+    res.addEventListener('change', function(){
+        matrix = JSON.parse(res.value);
+        max_y = 0;
+        for(var i=0;i<matrix.length;i++){
+            if(matrix[i] && max_y<matrix[i].length) max_y = matrix[i].length;
+        }
+
+        width = max_y*cell_size;
+        height = matrix.length*cell_size;
+
+        $sc_width.val(width);
+        $sc_height.val(height);
+
+        scene.width = width;
+        scene.height = height;
+    });
 
     $sc_width.change(function(){
         width = $sc_width.val();
