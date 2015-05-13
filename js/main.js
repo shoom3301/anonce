@@ -27,7 +27,7 @@ window.addEventListener('load', function(){
 
 
     //сцена
-    var scene = new Scene({
+    window.scene = new Scene({
         canvas: 'scene',
         cellSize: 32,
         matrix: matrix2,
@@ -121,7 +121,7 @@ window.addEventListener('load', function(){
             });
 
             //Игрок
-            var player = new Player(this, function(){
+            window.player = new Player(this, function(){
                 this.ctx.drawImage(this.scene.sprites.yoba, this.x, this.y);
             }, {
                 radius: 16,

@@ -105,7 +105,11 @@ var Scene = function (params) {
      * */
     this.drawMatrix = function () {
         for (var s = 0; s < this.passiveCells.length; s++) {
-            this.ctx.drawImage(this.sprites.passiveCells, this.passiveCells[s][0], this.passiveCells[s][1])
+            var x = this.passiveCells[s][0];
+            var y = this.passiveCells[s][1];
+            if(x+this.cellSize > this.offsetX && x < this.offsetX+this.width && y+this.cellSize > this.offsetY && y < this.offsetY+this.height){
+                this.ctx.drawImage(this.sprites.passiveCells, x, y)
+            }
         }
         for (var i = 0; i < this.activeCells.length; i++) {
             this.activeCells[i].render();

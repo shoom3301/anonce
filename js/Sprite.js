@@ -56,7 +56,9 @@ var Cell = function(row,col,w,h,scene,data){
         this.render = data.render;
     }else{
         this.render = function(){
-            this.scene.ctx.drawImage(this.sprite, this.x, this.y)
+            if(this.x+this.scene.cellSize > this.scene.offsetX && this.x < this.scene.offsetX+this.scene.width && this.y+this.scene.cellSize > this.scene.offsetY && this.y < this.scene.offsetY+this.scene.height){
+                this.scene.ctx.drawImage(this.sprite, this.x, this.y)
+            }
         };
     }
 
