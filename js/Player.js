@@ -9,10 +9,6 @@
  * @param params {Object} дополнительные параметры
  * */
 var Player = function(scene, render, params){
-    //Координата по оси X
-    this.x = params.x || 0;
-    //Координата по оси Y
-    this.y = params.y || 0;
     //Смещение по X
     this.offsetX = params.offsetX || 0;
     //Смещение по Y
@@ -21,16 +17,16 @@ var Player = function(scene, render, params){
     this.width = params.width || 32;
     //Высота
     this.height = params.height || 32;
+    //Скорость
+    this.speed = 5.6;
+    //Трение
+    this.friction = 0.9;
+    //Гравитация
+    this.gravity = 0.4;
     //Скорость по X
     this.velX = 0;
     //Скорость по Y
     this.velY = 0;
-    //Скорость
-    this.speed = 5.6;
-    //Трение
-    this.friction = 0.8;
-    //Гравитация
-    this.gravity = 0.4;
     //Клавиши управления
     this.keys = [];
     //В прыжке
@@ -43,37 +39,6 @@ var Player = function(scene, render, params){
     this._render = render;
     //2D контекст
     this.ctx = this.scene.ctx;
-    //Функции для рендеринга
-    this.forRender = [];
-    this.bonusCount = params.bonusCount;
-
-    /**
-     * Рендеринг игрока
-     * */
-    this.render = function(){
-        for(var i=0; i<this.forRender.length; i++){
-            this.forRender[i].apply(this);
-        }
-        return this;
-    };
-
-    /**
-     * Добавить функцию к рендерингу
-     * @param {Function} func функция рендеринга
-     * */
-    this.addForRender = function(func){
-        this.forRender.push(func);
-        return this;
-    };
-
-    /**
-     * Удаление функции из рендеринга
-     * @param {Function} func функция рендеринга
-     * */
-    this.removeForRender = function(func){
-        this.forRender.remove(func);
-        return this;
-    };
 
     /**
      * Включение управления клавишами
@@ -124,25 +89,24 @@ var Player = function(scene, render, params){
         this.checkCollision();
 
         //Если игрок приземлен
-        if(this.grounded){
-            this.velY = 0;
-        }
+        if(this.grounded) this.velY = 0;
 
         //Изменяем координаты
         this.x += this.velX;
         this.y += this.velY;
 
         //Если выходим за сцену по горизонтали
-        if (this.x >= this.scene.mapWidth-this.width) {
-            this.x = this.scene.mapWidth-this.width;
+        if (this.x >= this.level.width-this.width) {
+            this.x = this.level.width-this.width;
         } else if (this.x <= 0) {
             this.x = 0;
         }
 
         //Если выходим за сцену по вертикали
-        if(this.y >= this.scene.mapHeight-this.height){
-            this.y = this.scene.mapHeight - this.height;
+        if(this.y >= this.level.height-this.height){
+            this.y = this.level.height - this.height;
             this.jumping = false;
+            this.grounded = true;
         }
     };
 
@@ -150,36 +114,50 @@ var Player = function(scene, render, params){
      * Проверка столкновения с активными блоками
      * */
     this.checkCollision = function(){
-        for(var i=0; i<this.scene.activeCells.length;i++){
-            this.scene.activeCells[i].check(this);
+        for(var i=0; i<this.level.activeCells.length;i++){
+            if(this.level.cellIsVisible(this.level.activeCells[i])) this.level.activeCells[i].check(this);
         }
     };
 
     /**
-     * Открытие ворот к выходу
+     * Установка уровня
+     * @param {Level} lvl уровень
      * */
-    this.openGate = function(){
-        this.scene.gateIsOpen = true;
+    this.setLevel = function(lvl){
+        this.velX = 0;
+        this.velY = 0;
+        this.keys = [];
+        this.jumping = false;
+        this.grounded = false;
+        this.level = lvl;
+        this.x = this.level.playerPos[0];
+        this.y = this.level.playerPos[1];
+        this.level.removeForRender(this.move);
+        this.level.removeForRender(this._render);
+        this.level.addForRender(this.move, this);
+        this.level.addForRender(this._render, this);
     };
 
     /**
      * Победа на карте
      * */
     this.win = function(){
-        this.scene.endScreen('Победа!', '#1051b2');
+        this.level.removeForRender(this.move, this);
+        this.level.removeForRender(this._render, this);
+        this.level.onWin(this);
     };
 
     /**
      * Поражение на карте
      * */
     this.lose = function(){
-        this.scene.endScreen('Поражение!', '#b51717');
+        this.level.removeForRender(this.move, this);
+        this.level.removeForRender(this._render, this);
+        this.level.onLose(this);
     };
 
     /**
      * Включаем управление, добавляем в рендеринг движение и отрисовку игрока
      * */
     this.keyControls();
-    this.addForRender(this.move);
-    this.addForRender(this._render);
 };

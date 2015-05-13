@@ -35,7 +35,7 @@ window.DOMRelative = {
 /**
  * Подключение скрипта или стилей
  * */
-function include(path, type, callback){
+function include(path, type, callback, onerror){
     var access = true;
     var arr = (type=='css')?'styleSheets':'scripts';
 
@@ -54,18 +54,9 @@ function include(path, type, callback){
             script.src = path;
         }
 
-        if(callback && typeof callback == 'function') script.onload = callback;
-        if(callback && typeof callback == 'object'){
-            var func = null;
-            for(var param in callback){
-                if(param == 'callback'){
-                    func = callback[param];
-                }else{
-                    script[param] = callback[param];
-                }
-            }
-            if(func) script.apply(func);
-        }
+        script.onload = callback;
+        script.onerror = onerror;
+
         document.head.appendChild(script);
     }else{
         callback();
