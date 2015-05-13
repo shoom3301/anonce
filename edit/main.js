@@ -34,7 +34,8 @@ var sprites = {
     bonus: new Sprite('../images/bonus.png', 'bonus', on_srite_load),
     wall: new Sprite('../images/wall.png', 'wall', on_srite_load),
     gate_close: new Sprite('../images/gate_close.png', 'gate_close', on_srite_load),
-    thorn: new Sprite('../images/thorn.png', 'thorn', on_srite_load)
+    thorn: new Sprite('../images/thorn.png', 'thorn', on_srite_load),
+    player: new Sprite('../images/yoba.png', 'player', on_srite_load)
 };
 
 var clear_sprite = new Sprite('../images/clear.png', 'clear');
@@ -43,14 +44,16 @@ var indexes = {
     wall: 1,
     bonus: 3,
     gate_close: 5,
-    thorn: 7
+    thorn: 7,
+    player: 9
 };
 
 var sl = {
     1: 'wall',
     3: 'bonus',
     5: 'gate_close',
-    7: 'thorn'
+    7: 'thorn',
+    9: 'player'
 };
 
 function get_matrix(){
