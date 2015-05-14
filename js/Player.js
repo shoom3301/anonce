@@ -39,6 +39,12 @@ var Player = function(scene, render, params){
     this._render = render;
     //2D контекст
     this.ctx = this.scene.ctx;
+    //Имя игрока
+    this.name = params.name;
+    //Клавиши управления
+    this.controls = params.controls;
+    //Можно ли рендерить игрока
+    this.canRender = true;
 
     /**
      * Включение управления клавишами
@@ -59,7 +65,7 @@ var Player = function(scene, render, params){
      * */
     this.move = function(){
         //Прыжок
-        if (this.keys[87] || this.keys[32]) {
+        if (this.keys[this.controls.jump]) {
             if(!this.jumping && this.grounded){
                 this.jumping = true;
                 this.grounded = false;
@@ -67,13 +73,13 @@ var Player = function(scene, render, params){
             }
         }
         //Вправо
-        if (this.keys[68]) {
+        if (this.keys[this.controls.right]) {
             if (this.velX < this.speed) {
                 this.velX++;
             }
         }
         //Влево
-        if (this.keys[65]) {
+        if (this.keys[this.controls.left]) {
             if (this.velX > -this.speed) {
                 this.velX--;
             }
@@ -132,18 +138,13 @@ var Player = function(scene, render, params){
         this.level = lvl;
         this.x = this.level.playerPos[0];
         this.y = this.level.playerPos[1];
-        this.level.removeForRender(this.move);
-        this.level.removeForRender(this._render);
-        this.level.addForRender(this.move, this);
-        this.level.addForRender(this._render, this);
+        this.canRender = true;
     };
 
     /**
      * Победа на карте
      * */
     this.win = function(){
-        this.level.removeForRender(this.move, this);
-        this.level.removeForRender(this._render, this);
         this.level.onWin(this);
     };
 
@@ -151,9 +152,17 @@ var Player = function(scene, render, params){
      * Поражение на карте
      * */
     this.lose = function(){
-        this.level.removeForRender(this.move, this);
-        this.level.removeForRender(this._render, this);
         this.level.onLose(this);
+    };
+
+    /**
+     * Рендеринг игрока
+     * */
+    this.render = function(){
+        if(this.canRender){
+            this.move();
+            this._render();
+        }
     };
 
     /**

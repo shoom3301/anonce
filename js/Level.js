@@ -2,6 +2,13 @@
  * Created by Shoom on 13.05.15.
  */
 
+/**
+ * Уровень в игре
+ * @param {Array} matrix матрица уровня
+ * @param {Object} cellConstructors конструкторы ячеек
+ * @param {Object} params дополнительные параметры
+ * @param {Function} onload callback загрузки уровня
+ * */
 var Level = function(matrix, cellConstructors, params, onload){
     //сцена
     this.scene = null;
@@ -29,16 +36,19 @@ var Level = function(matrix, cellConstructors, params, onload){
     this.height = this.matrix.length * this.cellSize;
     //Конструкторы для создания ячеек
     this.cellConstructors = cellConstructors;
+    //Спрайты уровня
     this.sprites = {};
-
+    //Функции для рендеринга
     this.forRender = [];
+    //Победивший/проигравший игрок
+    this.finalPlayer = null;
 
     /**
      * Рендеринг игрока
      * */
     this.render = function(){
         for(var i=0; i<this.forRender.length; i++){
-            this.forRender[i].apply(this.forRender[i].contxt || this);
+            this.forRender[i].apply(this);
         }
         return this;
     };
@@ -46,10 +56,9 @@ var Level = function(matrix, cellConstructors, params, onload){
     /**
      * Добавить функцию к рендерингу
      * @param {Function} func функция рендеринга
-     * @param {Object} contxt контекст в котором будет вызываться функция
      * */
-    this.addForRender = function(func, contxt){
-        if(contxt) func.contxt = contxt;
+    this.addForRender = function(func){
+        this.removeForRender(func);
         this.forRender.push(func);
         return this;
     };
@@ -156,22 +165,34 @@ var Level = function(matrix, cellConstructors, params, onload){
 
     };
 
-    this.onWin = function(){
+    /**
+     * При победе на уровне
+     * @param {Player} player победивший игрок
+     * */
+    this.onWin = function(player){
+        this.finalPlayer = player;
         this.addForRender(this.winPic);
-        setTimeout(this.afterWin, 2000);
+        this.afterWin();
     };
 
-    this.onLose = function(){
+    /**
+     * При поражении на уровне
+     * @param {Player} player проигравший игрок
+     * */
+    this.onLose = function(player){
+        this.finalPlayer = player;
         this.addForRender(this.losePic);
-        setTimeout(this.afterLose, 500);
+        this.afterLose();
     };
 
+    //Заставка победы
     this.winPic = function(){
-        this.endScreen('Победа!', '#1051b2');
+        this.endScreen('Победа - '+this.finalPlayer.name+'!', '#1051b2');
     };
 
+    //Заставка поражения
     this.losePic = function(){
-        this.endScreen('Поражение!', '#b51717');
+        this.endScreen('Поражение - '+this.finalPlayer.name+'!', '#b51717');
     };
 
     //закрузка спрайтов
@@ -184,6 +205,7 @@ var Level = function(matrix, cellConstructors, params, onload){
                 new Sprite(params.sprites[v], v, function () {
                     th.spritesInLoad--;
                     th.sprites[this.name] = this.img;
+                    //После загрузки всех спрайтов загружаем уровень и вызываем callback
                     if (th.spritesInLoad == 0) {
                         th.load();
                         onload.apply(th);

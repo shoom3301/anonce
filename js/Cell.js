@@ -90,7 +90,7 @@ var Cell = function (row, col, width, height, level, params) {
     }
 
     //У твердых блоков корректируем положение игрока и затем обрабатываем индивидуальный callback
-    if (this.hardBlock) {
+    if (this.hardBlock){
         /**
          * проверка пересечения с игроком
          * @param {Player} player игрок
@@ -119,5 +119,6 @@ var Cell = function (row, col, width, height, level, params) {
         };
     }
 
+    //индивидуальный конструктор ячейки
     if (params.constructor) params.constructor.apply(this);
 };
