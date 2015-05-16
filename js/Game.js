@@ -21,6 +21,7 @@ var Game = function (scene, player, levels){
     this.player = player;
     //игроки
     this.players = [player];
+    this.started = false;
 
     //игра
     var th = this;
@@ -68,6 +69,8 @@ var Game = function (scene, player, levels){
      * Запуск игры
      * */
     this.start = function () {
+        this.started = true;
+
         function draw() {
             th.scene.ctx.save();
             th.scene.mapCenter(th.player);
@@ -92,7 +95,7 @@ var Game = function (scene, player, levels){
      * @param {Function} cb callback загрузки уровня
      * */
     this.getLevel = function (name, cb) {
-        include('levels/' + name + '.js', 'js', cb, function () {
+        include('levels/' + name + '.js?'+Date.now(), 'js', cb, function () {
             th.nextLevel(function(){
                 th.loadLevel(this);
             }, 0);
@@ -105,10 +108,19 @@ var Game = function (scene, player, levels){
      * @param {Number} index номер уровня
      * */
     this.nextLevel = function (cb, index) {
-        this.level = null;
+        //для тестирования уровней
+        if(!this.levels){
+            th.loadLevel(th.level);
+            th.level.removeForRender(th.level.losePic);
+            th.level.load();
+            return false;
+        }
+
         this.currentLevel++;
         if(typeof index != 'undefined') this.currentLevel = index;
         var levelName = this.levels[this.currentLevel];
+
+        this.level = null;
         this.getLevel(levelName, function () {
             th.level = window[levelName](cb);
         });

@@ -2,7 +2,7 @@
  * Created by Shoom on 12.05.15.
  */
 var cell_size = 32;
-var width = 640;
+var width = 840;
 var height = 480;
 var current_block;
 var curpos = {x: 16, y: 16};
@@ -74,6 +74,7 @@ function get_matrix(){
 
     res.value = JSON.stringify(matrix);
     res.select();
+    return JSON.parse(res.value);
 }
 
 $(window).load(function(){
@@ -136,6 +137,16 @@ $(window).load(function(){
         can_draw = false;
     }, false);
 
+    scene.addEventListener('mousewheel', function(e) {
+        var el = current_block.el[(e.wheelDelta>0?'next':'previous')+'Sibling'];
+        if(el){
+            el.onclick();
+        }
+
+        e.preventDefault();
+        return false;
+    }, false);
+
     window.addEventListener('keydown', function (e) {
         if(e.keyCode == 16){
             clear_mode = true;
@@ -148,6 +159,63 @@ $(window).load(function(){
             clear_mode = false;
         }
     });
+
+    var test = new Scene({
+        canvas: 'test',
+        view: {
+            width: 840,
+            height: 480
+        }
+    });
+
+    //Игрок
+    var player = new Player(test, function () {
+        this.ctx.drawImage(this.level.sprites.yoba, this.x, this.y);
+    }, {
+        radius: 16,
+        offsetX: 32,
+        offsetY: 32,
+        width: 32,
+        height: 32,
+        name: 'yoba',
+        controls: {
+            jump: 87,
+            right: 68,
+            left: 65
+        }
+    });
+
+    var player2 = new Player(test, function () {
+        this.ctx.drawImage(this.level.sprites.yoba2, this.x, this.y);
+    }, {
+        radius: 16,
+        offsetX: 32,
+        offsetY: 32,
+        width: 32,
+        height: 32,
+        name: 'yoba2',
+        controls: {
+            jump: 38,
+            right: 39,
+            left: 37
+        }
+    });
+
+    //Игра
+    var game = new Game(test, player);
+
+
+    document.getElementById('load_inp').onclick = function(){
+        var lvl = get_matrix();
+        game.level = null;
+        game.level = default_level(lvl, function(){
+            game.loadLevel(this);
+            if(!game.started){
+                game.start();
+                game.addPlayer(player2);
+            }
+        });
+    };
 
     function draw_cell(){
         var pos = [Math.floor(curpos.x/cell_size), Math.floor(curpos.y/cell_size)];

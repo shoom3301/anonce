@@ -74,6 +74,7 @@ var level1 = function (onload) {
         cellSize: 32,
         sprites: {
             yoba: 'images/yoba.png',
+            yoba2: 'images/yoba2.png',
             wall: 'images/wall.png',
             passiveCells: 'images/default.png',
             gate_open: 'images/gate_open.png',

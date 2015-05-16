@@ -26,7 +26,7 @@ window.addEventListener('load', function () {
     });
 
     var player2 = new Player(scene, function () {
-        this.ctx.drawImage(this.level.sprites.thorn, this.x, this.y);
+        this.ctx.drawImage(this.level.sprites.yoba2, this.x, this.y);
     }, {
         radius: 16,
         offsetX: 32,

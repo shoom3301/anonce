@@ -14,7 +14,13 @@
 
     <script type="text/javascript" src="../js/shm.js" charset="utf-8"></script>
 
+    <script type="text/javascript" src="../js/Cell.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../js/Level.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../js/Scene.js" charset="utf-8"></script>
     <script type="text/javascript" src="../js/Sprite.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../js/Player.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../js/Game.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../levels/default.js" charset="utf-8"></script>
     <script type="text/javascript" src="main.js" charset="utf-8"></script>
     <style>
         #filter{
@@ -53,6 +59,7 @@
 
         #scene{
             cursor: none;
+            margin-bottom: -20px;
         }
 
         #result{
@@ -64,6 +71,11 @@
             height: 30px;
             max-width: 300px;
             max-height: 30px;
+        }
+        #test{
+            background-color: #ffffff;
+            margin: 50px auto;
+            display: block;
         }
     </style>
 </head>
@@ -85,6 +97,7 @@
 
         <div id="result">
             <button onclick="get_matrix()">Матрица</button>
+            <button id="load_inp">Протестировать</button>
             <br>
             <textarea id="res"></textarea>
         </div>
@@ -92,6 +105,8 @@
         <div class="clear"></div>
     </div>
     <canvas id="scene"></canvas>
+    <br>
+    <canvas id="test"></canvas>
 </div>
 </body>
 </html>

@@ -103,6 +103,7 @@ var Cell = function (row, col, width, height, level, params) {
             } else if (dir === "b") {
                 player.grounded = true;
                 player.jumping = false;
+                player.velY = 0;
             } else if (dir === "t") {
                 player.velY = 0;
             }

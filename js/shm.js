@@ -153,3 +153,8 @@ function $el(tag){
 function base64src(base64){
     return 'data:image/jpeg;base64,'+base64;
 }
+
+function modRound(value, precision){
+    var precision_number = Math.pow(10, precision);
+    return Math.round(value * precision_number) / precision_number;
+}

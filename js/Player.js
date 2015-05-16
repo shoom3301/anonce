@@ -9,6 +9,8 @@
  * @param params {Object} дополнительные параметры
  * */
 var Player = function(scene, render, params){
+    this.oldpos = {x: 0, y: 0};
+    //this.connection = new WSClient('ws://localhost:8001');
     //Смещение по X
     this.offsetX = params.offsetX || 0;
     //Смещение по Y
@@ -94,9 +96,6 @@ var Player = function(scene, render, params){
         this.grounded = false;
         this.checkCollision();
 
-        //Если игрок приземлен
-        if(this.grounded) this.velY = 0;
-
         //Изменяем координаты
         this.x += this.velX;
         this.y += this.velY;
@@ -114,6 +113,11 @@ var Player = function(scene, render, params){
             this.jumping = false;
             this.grounded = true;
         }
+
+        this.x = modRound(this.x, 3);
+        this.y = modRound(this.y, 3);
+
+        //this.sendPos();
     };
 
     /**
@@ -162,6 +166,14 @@ var Player = function(scene, render, params){
         if(this.canRender){
             this.move();
             this._render();
+        }
+    };
+
+    this.sendPos = function(){
+        var pos = {x: this.x, y: this.y};
+        if(this.oldpos.x != pos.x && this.oldpos.y != pos.y){
+            this.oldpos = pos;
+            this.connection.send(JSON.stringify({x: this.x, y: this.y}));
         }
     };
 
