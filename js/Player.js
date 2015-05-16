@@ -9,8 +9,9 @@
  * @param params {Object} дополнительные параметры
  * */
 var Player = function(scene, render, params){
+    this.socket = null;
+    this.canBroadcast = false;
     this.oldpos = {x: 0, y: 0};
-    //this.connection = new WSClient('ws://localhost:8001');
     //Смещение по X
     this.offsetX = params.offsetX || 0;
     //Смещение по Y
@@ -117,7 +118,12 @@ var Player = function(scene, render, params){
         this.x = modRound(this.x, 3);
         this.y = modRound(this.y, 3);
 
-        //this.sendPos();
+        var ydiff = this.oldpos.y-this.y;
+        if(this.oldpos.x != this.x || (ydiff>0.5 || ydiff<-0.5)){
+            this.oldpos.x = this.x;
+            this.oldpos.y = this.y;
+            this.sendPos();
+        }
     };
 
     /**
@@ -169,11 +175,24 @@ var Player = function(scene, render, params){
         }
     };
 
+    this.connect = function(url, room, cb){
+        var th = this;
+        this.room = room;
+        this.socket = new WSClient(url, th);
+        this.socket.on('connect', function(){
+            th.socket.send('newPlayer');
+            th.socket.on('init', function(data){
+                cb(data.level, data.shadows);
+            });
+        });
+    };
+
     this.sendPos = function(){
-        var pos = {x: this.x, y: this.y};
-        if(this.oldpos.x != pos.x && this.oldpos.y != pos.y){
-            this.oldpos = pos;
-            this.connection.send(JSON.stringify({x: this.x, y: this.y}));
+        if(this.canBroadcast){
+            this.socket.send('coors', {
+                x: this.x,
+                y: this.y
+            });
         }
     };
 

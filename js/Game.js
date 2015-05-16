@@ -22,6 +22,7 @@ var Game = function (scene, player, levels){
     //игроки
     this.players = [player];
     this.started = false;
+    this.shadows = {};
 
     //игра
     var th = this;
@@ -82,6 +83,10 @@ var Game = function (scene, player, levels){
                 player.render();
             });
 
+            for(var v in th.shadows){
+                if(th.shadows.hasOwnProperty(v) && th.shadows[v]) th.shadows[v].render();
+            }
+
             th.scene.ctx.restore();
             requestAnimationFrame(draw);
         }
@@ -122,7 +127,7 @@ var Game = function (scene, player, levels){
 
         this.level = null;
         this.getLevel(levelName, function () {
-            th.level = window[levelName](cb);
+            th.level = window[levelName].init(cb);
         });
     };
 
@@ -135,6 +140,17 @@ var Game = function (scene, player, levels){
         player.setLevel(this.level);
     };
 
+    this.addShadow = function(name){
+        this.shadows[name] = new Shadow(this.scene, this.level, {
+            name: name
+        });
+    };
+
+    this.removeShadow = function(name){
+        delete this.shadows[name];
+        this.shadows[name] = null;
+    };
+
     /**
      * Перебор массива игроков
      * @param {Function} func callback
@@ -142,6 +158,12 @@ var Game = function (scene, player, levels){
     this.eachPlayers = function(func){
         for (var i = 0; i < this.players.length; i++) {
             func.apply(this, [this.players[i]]);
+        }
+    };
+
+    this.updateMatrix = function(matrix){
+        for(var i=0; i<matrix.length;i++){
+
         }
     };
 };

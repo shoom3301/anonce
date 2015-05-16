@@ -2,17 +2,10 @@
  * Created by Shoom on 14.05.15.
  */
 
-var ws = require("nodejs-websocket");
 
-var server = ws.createServer(function (socket) {
-    socket.on("text", function (str) {
-        console.log(str);
-    });
-    socket.on("close", function (code, reason) {
-        console.log("Connection closed");
-    });
-});
+var App = require('./App.js');
 
-server.listen(8001);
+var app = new App();
+app.createServer();
 
-console.log('Server started! ');
+console.log('Server started!');

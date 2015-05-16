@@ -19,13 +19,26 @@
     <script type="text/javascript" src="js/Scene.js" charset="utf-8"></script>
     <script type="text/javascript" src="js/Sprite.js" charset="utf-8"></script>
     <script type="text/javascript" src="js/Player.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/Shadow.js" charset="utf-8"></script>
     <script type="text/javascript" src="js/Game.js" charset="utf-8"></script>
-    <script type="text/javascript" src="js/Socket_client.js" charset="utf-8"></script>
-    <script type="text/javascript" src="levels/default.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/WSClient.js" charset="utf-8"></script>
     <script type="text/javascript" src="js/main.js" charset="utf-8"></script>
 </head>
 <body>
 <div id="main">
+    <div id="createRoom">
+        <div>
+            <label>Логин:</label>
+            <input type="text" id="my_name">
+        </div>
+        <div>
+            <label>Название комнаты:</label>
+            <input type="text" id="room_name">
+        </div>
+        <div>
+            <button id="connect_to_room">Подключиться</button>
+        </div>
+    </div>
     <canvas id="scene"></canvas>
 </div>
 </body>

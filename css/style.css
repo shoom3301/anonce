@@ -42,3 +42,13 @@ body{
     margin: 50px auto;
     display: block;
 }
+
+#createRoom{
+    background-color: #ffffff;
+    padding: 10px;
+}
+
+#createRoom div{
+    display: inline-block;
+    margin-right: 20px;
+}

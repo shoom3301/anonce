@@ -2,8 +2,8 @@
  * Created by Shoom on 14.05.15.
  */
 
-var level1 = function (onload) {
-    var matrix = [
+var level1 = {
+    matrix: [
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 1],
@@ -19,9 +19,8 @@ var level1 = function (onload) {
         [1, 0, 0, 0, 0, 0, 0, 0, 1, 7, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-    ];
-
-    var cellConstructors = {
+    ],
+    cellConstructors: {
         //стена
         1: {
             name: 'wall',
@@ -68,19 +67,20 @@ var level1 = function (onload) {
             }
         },
         9: 'player'
-    };
-
-    return new Level(matrix, cellConstructors, {
-        cellSize: 32,
-        sprites: {
-            yoba: 'images/yoba.png',
-            yoba2: 'images/yoba2.png',
-            wall: 'images/wall.png',
-            passiveCells: 'images/default.png',
-            gate_open: 'images/gate_open.png',
-            gate_close: 'images/gate_close.png',
-            thorn: 'images/thorn.png',
-            bonus: 'images/bonus.png'
-        }
-    }, onload);
+    },
+    sprites: {
+        yoba: 'images/yoba.png',
+        yoba2: 'images/yoba2.png',
+        wall: 'images/wall.png',
+        passiveCells: 'images/default.png',
+        gate_open: 'images/gate_open.png',
+        gate_close: 'images/gate_close.png',
+        thorn: 'images/thorn.png',
+        bonus: 'images/bonus.png'
+    },
+    init: function(onload){
+        return new Level(this.matrix, this.cellConstructors, this.sprites, {
+            cellSize: 32
+        }, onload);
+    }
 };

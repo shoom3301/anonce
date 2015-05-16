@@ -53,16 +53,15 @@ var default_level = function (matrix, onload) {
     };
 
     return new Level(matrix, cellConstructors, {
-        cellSize: 32,
-        sprites: {
-            yoba: '../images/yoba.png',
-            yoba2: '../images/yoba2.png',
-            wall: '../images/wall.png',
-            passiveCells: '../images/default.png',
-            gate_open: '../images/gate_open.png',
-            gate_close: '../images/gate_close.png',
-            thorn: '../images/thorn.png',
-            bonus: '../images/bonus.png'
-        }
+        yoba: '../images/yoba.png',
+        yoba2: '../images/yoba2.png',
+        wall: '../images/wall.png',
+        passiveCells: '../images/default.png',
+        gate_open: '../images/gate_open.png',
+        gate_close: '../images/gate_close.png',
+        thorn: '../images/thorn.png',
+        bonus: '../images/bonus.png'
+    }, {
+        cellSize: 32
     }, onload);
 };

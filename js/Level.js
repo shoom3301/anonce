@@ -6,10 +6,11 @@
  * Уровень в игре
  * @param {Array} matrix матрица уровня
  * @param {Object} cellConstructors конструкторы ячеек
+ * @param {Object} sprites хеш спрайтов уровня
  * @param {Object} params дополнительные параметры
  * @param {Function} onload callback загрузки уровня
  * */
-var Level = function(matrix, cellConstructors, params, onload){
+var Level = function(matrix, cellConstructors, sprites, params, onload){
     //сцена
     this.scene = null;
     //сокращение для 2d контекста
@@ -162,7 +163,6 @@ var Level = function(matrix, cellConstructors, params, onload){
                 this.passiveCells.push([this.cellSize * v, this.cellSize * i]);
             }
         });
-
     };
 
     /**
@@ -196,23 +196,21 @@ var Level = function(matrix, cellConstructors, params, onload){
     };
 
     //закрузка спрайтов
-    if (params.sprites) {
-        this.spritesInLoad = 0;
-        var th = this;
-        for (var v in params.sprites) {
-            if (params.sprites.hasOwnProperty(v)) {
-                this.spritesInLoad++;
-                new Sprite(params.sprites[v], v, function () {
-                    th.spritesInLoad--;
-                    th.sprites[this.name] = this.img;
-                    //После загрузки всех спрайтов загружаем уровень и вызываем callback
-                    if (th.spritesInLoad == 0) {
-                        th.load();
-                        onload.apply(th);
-                    }
-                });
+    this.spritesInLoad = 0;
+    var th = this;
+    for (var v in sprites) {
+        if (sprites.hasOwnProperty(v)) {
+            this.spritesInLoad++;
+            new Sprite(sprites[v], v, function () {
+                th.spritesInLoad--;
+                th.sprites[this.name] = this.img;
+                //После загрузки всех спрайтов загружаем уровень и вызываем callback
+                if (th.spritesInLoad == 0) {
+                    th.load();
+                    onload.apply(th);
+                }
+            });
 
-            }
         }
     }
 };
