@@ -105,7 +105,7 @@ var Room = function(name, owner, level){
         var res = [];
         this.eachPlayers(function(player){
             if(player.name != plr.name){
-                res.push(player.name);
+                res.push([player.name, player.x, player.y]);
             }
         });
         return res;
@@ -186,7 +186,7 @@ var App = function(port){
                 var info = JSON.parse(str);
                 var command = info.command;
 
-                if(th.commands[command]) th.commands[command].apply(th, [socket, th.rooms[info.room] || info.room, info.player, info.data]);
+                if(th.commands[command]) th.commands[command].apply(th, [socket, info.room, info.player, info.data]);
             });
 
             //при закрытии соединения удаляем игрока
@@ -215,14 +215,12 @@ var App = function(port){
             var player = new Player(name, socket);
             //команды вызываются через метод apply, по этому this здесь используется правильно
             //noinspection JSPotentiallyInvalidUsageOfThis
-            if(!this.rooms[room] && !room.name){
+            if(!this.rooms[room]){
                 //noinspection JSPotentiallyInvalidUsageOfThis
                 this.rooms[room] = new Room(room, player, 'level2');
-                //noinspection JSPotentiallyInvalidUsageOfThis
-                this.rooms[room].addPlayer(player);
-            }else{
-                room.addPlayer(player);
             }
+            //noinspection JSPotentiallyInvalidUsageOfThis
+            this.rooms[room].addPlayer(player);
             player.init();
             return this;
         },
@@ -232,18 +230,19 @@ var App = function(port){
          * */
         removePlayer: function(player){
             //noinspection JSPotentiallyInvalidUsageOfThis
-            if(this.rooms[player.room]){
+            if(this.rooms[player.room.name]){
                 //noinspection JSPotentiallyInvalidUsageOfThis
-                this.rooms[player.room].removePlayer(player);
+                player.room.removePlayer(player);
 
                 //noinspection JSPotentiallyInvalidUsageOfThis
-                if(this.rooms[player.room].owner.name == player.name){
+                if(player.room.owner.name == player.name){
                     //noinspection JSPotentiallyInvalidUsageOfThis
-                    this.rooms[player.room].destroy();
+                    player.room.destroy();
                     //noinspection JSPotentiallyInvalidUsageOfThis
-                    delete this.rooms[player.room];
+                    delete this.rooms[player.room.name];
                     //noinspection JSPotentiallyInvalidUsageOfThis
-                    this.rooms[player.room] = null;
+                    this.rooms[player.room.name] = null;
+                    console.log('Room `'+player.room.name+'` destroyed!');
                 }
             }
             return this;
@@ -256,7 +255,8 @@ var App = function(port){
          * @param {Object} data имя данные
          * */
         coors: function(socket, room, name, data){
-            var player = room.getPlayer(name);
+            //noinspection JSPotentiallyInvalidUsageOfThis
+            var player = this.rooms[room].getPlayer(name);
             if(player) player.setCoors(data);
             return this;
         }

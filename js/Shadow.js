@@ -10,9 +10,9 @@
  * */
 var Shadow = function(scene, level, params){
     //x
-    this.x = 0;
+    this.x = params.x || 0;
     //y
-    this.y = 0;
+    this.y = params.y || 0;
     //Ширина
     this.width = params.width || 32;
     //Высота
@@ -43,7 +43,7 @@ var Shadow = function(scene, level, params){
      * */
     this.checkCollision = function(){
         for(var i=0; i<this.level.activeCells.length;i++){
-            if(this.level.cellIsVisible(this.level.activeCells[i])) this.level.activeCells[i].check(this);
+            this.level.activeCells[i].check(this);
         }
     };
 

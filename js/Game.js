@@ -25,6 +25,8 @@ var Game = function (scene, player, levels){
     this.started = false;
     //тени (другие игроки по мультиплееру)
     this.shadows = {};
+    //можно ли рендерить
+    this.canDraw = true;
 
     //игра
     var th = this;
@@ -75,22 +77,24 @@ var Game = function (scene, player, levels){
         this.started = true;
 
         function draw() {
-            th.scene.ctx.save();
-            th.scene.mapCenter(th.player);
-            th.scene.clear();
-            th.scene.level.drawMatrix();
-            th.scene.level.render();
+            if(th.canDraw){
+                th.scene.ctx.save();
+                th.scene.mapCenter(th.player);
+                th.scene.clear();
+                th.scene.level.drawMatrix();
+                th.scene.level.render();
 
-            th.eachPlayers(function(player){
-                player.render();
-            });
+                th.eachPlayers(function(player){
+                    player.render();
+                });
 
-            for(var v in th.shadows){
-                if(th.shadows.hasOwnProperty(v) && th.shadows[v]) th.shadows[v].render();
+                for(var v in th.shadows){
+                    if(th.shadows.hasOwnProperty(v) && th.shadows[v]) th.shadows[v].render();
+                }
+
+                th.scene.ctx.restore();
+                requestAnimationFrame(draw);
             }
-
-            th.scene.ctx.restore();
-            requestAnimationFrame(draw);
         }
 
         draw();
@@ -145,12 +149,14 @@ var Game = function (scene, player, levels){
 
     /**
      * Добавление тени на уровень
-     * @param {String} name имя тени
+     * @param {Array} shadow тень
      * */
-    this.addShadow = function(name){
-        if(!this.shadows[name]){
-            this.shadows[name] = new Shadow(this.scene, this.level, {
-                name: name
+    this.addShadow = function(shadow){
+        if(!this.shadows[shadow[0]]){
+            this.shadows[shadow[0]] = new Shadow(this.scene, this.level, {
+                name: shadow[0],
+                x: shadow[1],
+                y: shadow[2]
             });
         }
     };
@@ -206,7 +212,8 @@ var Game = function (scene, player, levels){
                 }
             })
             .on('roomOff', function(){
-                th = null;
+                th.canDraw = false;
+                th.scene.clear();
             });
 
         return this;

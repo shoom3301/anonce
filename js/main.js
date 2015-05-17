@@ -28,10 +28,10 @@ window.addEventListener('load', function () {
         });
 
         //коннектимся к серверу
-        player.connect('ws://2.132.137.149:25565', $('#room_name').val(), function(lvl, shadows){
-            var game = new Game(scene, player);
+        player.connect('ws://178.89.214.206:25565', $('#room_name').val(), function(lvl, shadows){
+            window.game = new Game(scene, player);
             game.getLevel(lvl, function(){
-                this.initConnection(lvl, player, shadows);
+                game.initConnection(lvl, player, shadows);
             });
         });
     });
