@@ -256,8 +256,11 @@ var App = function(port){
          * */
         coors: function(socket, room, name, data){
             //noinspection JSPotentiallyInvalidUsageOfThis
-            var player = this.rooms[room].getPlayer(name);
-            if(player) player.setCoors(data);
+            if(this.rooms[room]){
+                //noinspection JSPotentiallyInvalidUsageOfThis
+                var player = this.rooms[room].getPlayer(name);
+                if(player) player.setCoors(data);
+            }
             return this;
         }
     };
