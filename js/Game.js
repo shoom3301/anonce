@@ -21,7 +21,9 @@ var Game = function (scene, player, levels){
     this.player = player;
     //игроки
     this.players = [player];
+    //запущена ли игра
     this.started = false;
+    //тени (другие игроки по мультиплееру)
     this.shadows = {};
 
     //игра
@@ -129,6 +131,7 @@ var Game = function (scene, player, levels){
         this.getLevel(levelName, function () {
             th.level = window[levelName].init(cb);
         });
+        return this;
     };
 
     /**
@@ -140,12 +143,22 @@ var Game = function (scene, player, levels){
         player.setLevel(this.level);
     };
 
+    /**
+     * Добавление тени на уровень
+     * @param {String} name имя тени
+     * */
     this.addShadow = function(name){
-        this.shadows[name] = new Shadow(this.scene, this.level, {
-            name: name
-        });
+        if(!this.shadows[name]){
+            this.shadows[name] = new Shadow(this.scene, this.level, {
+                name: name
+            });
+        }
     };
 
+    /**
+     * Удаление тени
+     * @param {String} name имя тени
+     * */
     this.removeShadow = function(name){
         delete this.shadows[name];
         this.shadows[name] = null;
@@ -161,9 +174,41 @@ var Game = function (scene, player, levels){
         }
     };
 
-    this.updateMatrix = function(matrix){
-        for(var i=0; i<matrix.length;i++){
+    /**
+     * Инициализация соединения
+     * @param {String} lvl уровень
+     * @param {Player} player игрок
+     * @param {Array} shadows тени
+     * */
+    this.initConnection = function(lvl, player, shadows){
+        this.level = window[lvl].init(function(){
+            th.loadLevel(this);
+            th.start();
+            player.canBroadcast = true;
+        });
 
+        for(var i=0; i<shadows.length; i++){
+            this.addShadow(shadows[i]);
         }
+
+        player.socket
+            .on('newPlayer', function(data){
+                th.addShadow(data.player);
+            })
+            .on('leavePlayer', function(data){
+                th.removeShadow(data.player);
+            })
+            .on('coors', function(data){
+                if(th.shadows[data.shadow]){
+                    th.shadows[data.shadow].addCoors(data.x, data.y);
+                }else{
+                    th.addShadow(data.shadow);
+                }
+            })
+            .on('roomOff', function(){
+                th = null;
+            });
+
+        return this;
     };
 };

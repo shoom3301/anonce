@@ -197,6 +197,7 @@ var Level = function(matrix, cellConstructors, sprites, params, onload){
 
     //закрузка спрайтов
     this.spritesInLoad = 0;
+
     var th = this;
     for (var v in sprites) {
         if (sprites.hasOwnProperty(v)) {

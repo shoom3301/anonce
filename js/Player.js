@@ -10,7 +10,9 @@
  * */
 var Player = function(scene, render, params){
     this.socket = null;
+    //можно ли отсылать серверу свои координаты
     this.canBroadcast = false;
+    //предыдущая позиция
     this.oldpos = {x: 0, y: 0};
     //Смещение по X
     this.offsetX = params.offsetX || 0;
@@ -48,6 +50,8 @@ var Player = function(scene, render, params){
     this.controls = params.controls;
     //Можно ли рендерить игрока
     this.canRender = true;
+    //комната
+    this.room = null;
 
     /**
      * Включение управления клавишами
@@ -175,6 +179,12 @@ var Player = function(scene, render, params){
         }
     };
 
+    /**
+     * Соединение с сервером
+     * @param {String} url адресс ws сервера
+     * @param {Room} room комната
+     * @param {Function} cb callback
+     * */
     this.connect = function(url, room, cb){
         var th = this;
         this.room = room;
@@ -187,6 +197,9 @@ var Player = function(scene, render, params){
         });
     };
 
+    /**
+     * Отправка координат на сервер
+     * */
     this.sendPos = function(){
         if(this.canBroadcast){
             this.socket.send('coors', {

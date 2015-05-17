@@ -3,17 +3,16 @@
  */
 
 /**
- * Класс игрока
- * @param scene {Scene} сцена на который существует игрок
+ * Тень. Игрок в комнате, который меняет свое состояние только от данных с сервера.
+ * @param scene {Scene} сцена на который существует тень
  * @param level {Level} уровень
  * @param params {Object} дополнительные параметры
  * */
 var Shadow = function(scene, level, params){
+    //x
     this.x = 0;
+    //y
     this.y = 0;
-    this.xb = 0;
-    this.yb = 0;
-    this.coeff = 0.5;
     //Ширина
     this.width = params.width || 32;
     //Высота
@@ -34,44 +33,28 @@ var Shadow = function(scene, level, params){
      * */
     this.render = function(){
         if(this.canRender){
-            //this.move();
             this.checkCollision();
             this.ctx.drawImage(this.level.sprites.yoba, this.x, this.y);
         }
     };
 
+    /**
+     * Проверка столкновения с активными блоками
+     * */
     this.checkCollision = function(){
         for(var i=0; i<this.level.activeCells.length;i++){
             if(this.level.cellIsVisible(this.level.activeCells[i])) this.level.activeCells[i].check(this);
         }
     };
 
+    /**
+     * Изменение координат тени
+     * @param {Number} x x
+     * @param {Number} y y
+     * */
     this.addCoors = function(x,y){
         this.x = x;
         this.y = y;
-    };
-
-    this.move = function(){
-        var xdiff = this.xb-this.x;
-        if(this.xb && (xdiff>this.coeff || xdiff<-this.coeff)){
-            if(this.xb>this.x){
-                this.x += this.coeff;
-                this.xb -= this.coeff;
-            }else{
-                this.x -= this.coeff;
-                this.xb += this.coeff;
-            }
-        }
-        var ydiff = this.yb-this.y;
-        if(this.yb && (ydiff>this.coeff || ydiff<-this.coeff)){
-            if(this.yb>this.y){
-                this.y += this.coeff;
-                this.yb -= this.coeff;
-            }else{
-                this.y -= this.coeff;
-                this.yb += this.coeff;
-            }
-        }
     };
 
     /**
