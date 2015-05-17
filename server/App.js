@@ -58,7 +58,7 @@ var App = function(port){
             //noinspection JSPotentiallyInvalidUsageOfThis
             if(!this.rooms[room]){
                 //noinspection JSPotentiallyInvalidUsageOfThis
-                this.rooms[room] = new Room(room, player, 'level2');
+                this.rooms[room] = new Room(room, player, data.level);
                 console.log('Room `'+room+'` created! Owner - '+player.name+'.');
             }
             //noinspection JSPotentiallyInvalidUsageOfThis

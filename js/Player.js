@@ -198,14 +198,15 @@ var Player = function(scene, params){
      * Соединение с сервером
      * @param {String} url адресс ws сервера
      * @param {Room} room комната
+     * @param {String} lvl уровень
      * @param {Function} cb callback
      * */
-    this.connect = function(url, room, cb){
+    this.connect = function(url, room, lvl, cb){
         var th = this;
         this.room = room;
         this.socket = new WSClient(url, th);
         this.socket.on('connect', function(){
-            th.socket.send('newPlayer', {name: th.name});
+            th.socket.send('newPlayer', {name: th.name, level: lvl});
             th.socket.on('init', function(data){
                 th.id = data.id;
                 cb(data.level, data.shadows, data.matrixChanges);
