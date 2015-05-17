@@ -46,6 +46,7 @@ var level2 = {
             check: function (player, check) {
                 if (check) {
                     this.destroy();
+                    player.changeMatrix(this.row, this.col, 0);
                     player.level.bonusCount--;
                     if (player.level.bonusCount == 0) {
                         player.level.openGate();
@@ -96,3 +97,7 @@ var level2 = {
         }, onload);
     }
 };
+
+if(typeof module != 'undefined'){
+    module.exports = level2;
+}

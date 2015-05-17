@@ -9,6 +9,7 @@
  * @param params {Object} дополнительные параметры
  * */
 var Player = function(scene, render, params){
+    //@abstract
     this.socket = null;
     //можно ли отсылать серверу свои координаты
     this.canBroadcast = false;
@@ -192,7 +193,7 @@ var Player = function(scene, render, params){
         this.socket.on('connect', function(){
             th.socket.send('newPlayer');
             th.socket.on('init', function(data){
-                cb(data.level, data.shadows);
+                cb(data.level, data.shadows, data.matrixChanges);
             });
         });
     };
@@ -207,6 +208,14 @@ var Player = function(scene, render, params){
                 y: this.y
             });
         }
+    };
+
+    this.changeMatrix = function(row, col, value){
+        this.socket.send('changeMatrix', {
+            row: row,
+            col: col,
+            value: value
+        });
     };
 
     /**

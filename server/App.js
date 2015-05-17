@@ -3,167 +3,8 @@
  */
 
 var ws = require("nodejs-websocket");
-
-/**
- * Комната
- * @param {String} name название комнаты
- * @param {Player} owner владелец комнаты
- * @param {String} level название комнаты
- * */
-var Room = function(name, owner, level){
-    //название комнаты
-    this.name = name;
-    //владелец комнаты
-    this.owner = owner;
-    //игроки в комнате
-    this.players = [];
-    //название уровня
-    this.levelName = level;
-    //уровень
-    this.level = require('../levels/'+this.levelName+'.js');
-
-    /**
-     * Добавление игрока в комнату
-     * @param {Player} player игрок
-     * */
-    this.addPlayer = function(player){
-        this.players.push(player);
-        player.room = this;
-        this.broadcast('newPlayer', {player: player.name}, player);
-        return this;
-    };
-
-    /**
-     * Удаление игрока из комнаты
-     * @param {Player} player игрок
-     * */
-    this.removePlayer = function(player){
-        this.players.splice(this.players.indexOf(player), 1);
-        this.broadcast('leavePlayer', {player: player.name});
-        player = null;
-        return this;
-    };
-
-    /**
-     * Получение игрока по имени
-     * @param {String} name имя игрока
-     * */
-    this.getPlayer = function(name){
-        for(var i=0; i<this.players.length; i++){
-            if(this.players[i].name == name) return this.players[i];
-        }
-        return false;
-    };
-
-    /**
-     * Перебор игроков
-     * @param {Function} func обработчик итерации
-     * */
-    this.eachPlayers = function(func){
-        for(var i=0; i<this.players.length; i++){
-            func.apply(this, [this.players[i]]);
-        }
-        return this;
-    };
-
-    /**
-     * Оповещение игроков
-     * @param {String} command имя команды
-     * @param {Object} data данные
-     * @param {Player} plr игрок от которого исходит оповещение (его самого не обовещает)
-     * */
-    this.broadcast = function(command, data, plr){
-        this.eachPlayers(function(player){
-            if(!plr || plr.name != player.name){
-                player.socket.sendText(JSON.stringify({
-                    command: command,
-                    data: data
-                }));
-            }
-        });
-        return this;
-    };
-
-    /**
-     * Изменение координат игрока
-     * @param {Player} player игрок у которого изменились координаты
-     * */
-    this.newCoors = function(player){
-        this.broadcast('coors', {
-            shadow: player.name,
-            x: player.x,
-            y: player.y
-        }, player);
-        return this;
-    };
-
-    /**
-     * Получение списка игроков
-     * @param {Player} plr игрок который получает список
-     * */
-    this.getShadows = function(plr){
-        var res = [];
-        this.eachPlayers(function(player){
-            if(player.name != plr.name){
-                res.push([player.name, player.x, player.y]);
-            }
-        });
-        return res;
-    };
-
-    /**
-     * Удаление комнаты
-     * */
-    this.destroy = function(){
-        this.broadcast('roomOff');
-    };
-};
-
-/**
- * Игрок
- * @param {String} name имя игрока
- * @param {Object} socket ws соединение
- * */
-var Player = function(name, socket){
-    //имя
-    this.name = name;
-    //соединение
-    this.socket = socket;
-    //комната
-    this.room = null;
-    //x
-    this.x = 0.1;
-    //y
-    this.y = 0.1;
-
-    //назначаем соединению модель игрока
-    socket.player = this;
-
-    /**
-     * Изменение координат игрока
-     * @param {Object} coors координаты
-     * */
-    this.setCoors = function(coors){
-        this.x = coors.x;
-        this.y = coors.y;
-        this.room.newCoors(this);
-        return this;
-    };
-
-    /**
-     * Инициализация игрока
-     * */
-    this.init = function(){
-        this.socket.sendText(JSON.stringify({
-            command: 'init',
-            data: {
-                level: this.room.levelName,
-                shadows: this.room.getShadows(this)
-            }
-        }));
-        return this;
-    };
-};
+var Room = require("./Room.js");
+var Player = require("./Player.js");
 
 /**
  * Сервер-приложение
@@ -218,6 +59,7 @@ var App = function(port){
             if(!this.rooms[room]){
                 //noinspection JSPotentiallyInvalidUsageOfThis
                 this.rooms[room] = new Room(room, player, 'level2');
+                console.log('Room `'+room+'` created! Owner - '+player.name+'.');
             }
             //noinspection JSPotentiallyInvalidUsageOfThis
             this.rooms[room].addPlayer(player);
@@ -262,6 +104,33 @@ var App = function(port){
                 if(player) player.setCoors(data);
             }
             return this;
+        },
+        /**
+         * Изменение матрицы
+         * @param {Object} socket соединение
+         * @param {String} room имя комнаты
+         * @param {String} name имя игрока
+         * @param {Object} data имя данные
+         * */
+        changeMatrix: function(socket, room, name, data){
+            //noinspection JSPotentiallyInvalidUsageOfThis
+            var rm = this.rooms[room];
+            if(rm){
+                if(rm.matrixChanges[data.row] && rm.matrixChanges[data.row][data.col] == data.val){
+                    if(rm.matrixChanges[data.row][data.col]){
+                        rm.matrixChanges[data.row].remove(data.col);
+                        if(rm.matrixChanges[data.row].length == 0){
+                            rm.matrixChanges.remove(data.row);
+                        }
+                    }
+                }else{
+                    if(!rm.matrixChanges[data.row]){
+                        rm.matrixChanges[data.row] = [];
+                    }
+                    rm.matrixChanges[data.row][data.col] = data.value;
+                    rm.broadcast('matrixChange', {row: data.row, col: data.col, value: data.value}, rm.getPlayer(name));
+                }
+            }
         }
     };
 };

@@ -195,6 +195,23 @@ var Level = function(matrix, cellConstructors, sprites, params, onload){
         this.endScreen('Поражение - '+this.finalPlayer.name+'!', '#b51717');
     };
 
+    /**
+     * Изменение матрицы
+     * @param {Number} row строка
+     * @param {Number} col столбец
+     * @param {Number} value значение
+     * */
+    this.changeMatrix = function(row, col, value){
+        for(var i=0; i<this.activeCells.length; i++){
+            if(this.activeCells[i].row == row && this.activeCells[i].col == col){
+                if(value == 0){
+                    this.activeCells.remove(this.activeCells[i]);
+                    this.passiveCells.push([col*this.cellSize, row*this.cellSize]);
+                }
+            }
+        }
+    };
+
     //закрузка спрайтов
     this.spritesInLoad = 0;
 

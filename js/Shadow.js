@@ -33,17 +33,7 @@ var Shadow = function(scene, level, params){
      * */
     this.render = function(){
         if(this.canRender){
-            this.checkCollision();
             this.ctx.drawImage(this.level.sprites.yoba, this.x, this.y);
-        }
-    };
-
-    /**
-     * Проверка столкновения с активными блоками
-     * */
-    this.checkCollision = function(){
-        for(var i=0; i<this.level.activeCells.length;i++){
-            this.level.activeCells[i].check(this);
         }
     };
 

@@ -185,10 +185,20 @@ var Game = function (scene, player, levels){
      * @param {String} lvl уровень
      * @param {Player} player игрок
      * @param {Array} shadows тени
+     * @param {Array} matrixChanges изменеия матрицы
      * */
-    this.initConnection = function(lvl, player, shadows){
+    this.initConnection = function(lvl, player, shadows, matrixChanges){
         this.level = window[lvl].init(function(){
             th.loadLevel(this);
+            for(var i=0; i<matrixChanges.length; i++){
+                if(matrixChanges[i]){
+                    for(var v=0; v<matrixChanges[i].length; v++){
+                        if(typeof matrixChanges[i][v] == 'number'){
+                            this.changeMatrix(i, v, matrixChanges[i][v]);
+                        }
+                    }
+                }
+            }
             th.start();
             player.canBroadcast = true;
         });
@@ -210,6 +220,9 @@ var Game = function (scene, player, levels){
                 }else{
                     th.addShadow(data.shadow);
                 }
+            })
+            .on('matrixChange', function(data){
+                th.level.changeMatrix(data.row, data.col, data.value);
             })
             .on('roomOff', function(){
                 th.canDraw = false;
