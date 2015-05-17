@@ -28,7 +28,8 @@ var Room = function(name, owner, level){
     this.addPlayer = function(player){
         this.players.push(player);
         player.room = this;
-        this.broadcast('newPlayer', {player: player.name}, player);
+        player.id = this.players.length-1;
+        this.broadcast('newPlayer', {player: [player.id, player.name, player.x, player.y]}, player);
         return this;
     };
 
@@ -38,7 +39,7 @@ var Room = function(name, owner, level){
      * */
     this.removePlayer = function(player){
         this.players.remove(player);
-        this.broadcast('leavePlayer', {player: player.name});
+        this.broadcast('leavePlayer', {player: player.id});
         player = null;
         return this;
     };
@@ -73,7 +74,7 @@ var Room = function(name, owner, level){
      * */
     this.broadcast = function(command, data, plr){
         this.eachPlayers(function(player){
-            if(!plr || plr.name != player.name){
+            if(!plr || plr.id != player.id){
                 player.socket.sendText(JSON.stringify({
                     command: command,
                     data: data
@@ -89,7 +90,7 @@ var Room = function(name, owner, level){
      * */
     this.newCoors = function(player){
         this.broadcast('coors', {
-            shadow: player.name,
+            shadow: player.id,
             x: player.x,
             y: player.y
         }, player);
@@ -103,8 +104,8 @@ var Room = function(name, owner, level){
     this.getShadows = function(plr){
         var res = [];
         this.eachPlayers(function(player){
-            if(player.name != plr.name){
-                res.push([player.name, player.x, player.y]);
+            if(player.id != plr.id){
+                res.push([player.id, player.name, player.x, player.y]);
             }
         });
         return res;

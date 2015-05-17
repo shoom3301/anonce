@@ -49,11 +49,11 @@ var App = function(port){
          * Вход нового игрока в комнату
          * @param {Object} socket соединение
          * @param {String} room имя комнаты
-         * @param {String} name имя игрока
+         * @param {String} id id игрока
+         * @param {Object} data данные
          * */
-        newPlayer: function(socket, room, name){
-            socket.player = name;
-            var player = new Player(name, socket);
+        newPlayer: function(socket, room, id, data){
+            var player = new Player(data.name, socket);
             //команды вызываются через метод apply, по этому this здесь используется правильно
             //noinspection JSPotentiallyInvalidUsageOfThis
             if(!this.rooms[room]){
@@ -77,7 +77,7 @@ var App = function(port){
                 player.room.removePlayer(player);
 
                 //noinspection JSPotentiallyInvalidUsageOfThis
-                if(player.room.owner.name == player.name){
+                if(player.room.owner.id == player.id){
                     //noinspection JSPotentiallyInvalidUsageOfThis
                     player.room.destroy();
                     //noinspection JSPotentiallyInvalidUsageOfThis
@@ -93,14 +93,14 @@ var App = function(port){
          * Координаты
          * @param {Object} socket соединение
          * @param {String} room имя комнаты
-         * @param {String} name имя игрока
+         * @param {String} id id игрока
          * @param {Object} data имя данные
          * */
-        coors: function(socket, room, name, data){
+        coors: function(socket, room, id, data){
             //noinspection JSPotentiallyInvalidUsageOfThis
             if(this.rooms[room]){
                 //noinspection JSPotentiallyInvalidUsageOfThis
-                var player = this.rooms[room].getPlayer(name);
+                var player = this.rooms[room].players[id];
                 if(player) player.setCoors(data);
             }
             return this;
@@ -109,10 +109,10 @@ var App = function(port){
          * Изменение матрицы
          * @param {Object} socket соединение
          * @param {String} room имя комнаты
-         * @param {String} name имя игрока
+         * @param {String} id id игрока
          * @param {Object} data имя данные
          * */
-        changeMatrix: function(socket, room, name, data){
+        changeMatrix: function(socket, room, id, data){
             //noinspection JSPotentiallyInvalidUsageOfThis
             var rm = this.rooms[room];
             if(rm){
@@ -128,7 +128,7 @@ var App = function(port){
                         rm.matrixChanges[data.row] = [];
                     }
                     rm.matrixChanges[data.row][data.col] = data.value;
-                    rm.broadcast('matrixChange', {row: data.row, col: data.col, value: data.value}, rm.getPlayer(name));
+                    rm.broadcast('matrixChange', {row: data.row, col: data.col, value: data.value}, rm.players[id]);
                 }
             }
         }

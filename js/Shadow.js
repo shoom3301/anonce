@@ -25,6 +25,8 @@ var Shadow = function(scene, level, params){
     this.ctx = this.scene.ctx;
     //Имя игрока
     this.name = params.name;
+    //id
+    this.id = params.id;
     //Можно ли рендерить игрока
     this.canRender = true;
 
@@ -34,6 +36,15 @@ var Shadow = function(scene, level, params){
     this.render = function(){
         if(this.canRender){
             this.ctx.drawImage(this.level.sprites.yoba, this.x, this.y);
+            this.ctx.font = "13px Arial";
+            this.ctx.fillStyle = "#ffffff";
+            this.ctx.textAlign = "center";
+            this.ctx.lineWidth = 3;
+            this.ctx.strokeStyle = '#000000';
+            var x = this.x+(this.width/2);
+            var y = this.y-5;
+            this.ctx.strokeText(this.name, x, y);
+            this.ctx.fillText(this.name, x, y);
         }
     };
 

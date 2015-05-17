@@ -8,6 +8,8 @@
  * @param {Object} socket ws соединение
  * */
 var Player = function(name, socket){
+    //id
+    this.id = 0;
     //имя
     this.name = name;
     //соединение
@@ -40,6 +42,7 @@ var Player = function(name, socket){
         this.socket.sendText(JSON.stringify({
             command: 'init',
             data: {
+                id: this.id,
                 level: this.room.levelName,
                 shadows: this.room.getShadows(this),
                 matrixChanges: this.room.matrixChanges

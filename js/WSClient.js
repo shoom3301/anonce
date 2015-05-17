@@ -53,13 +53,13 @@ var WSClient = function(url, player){
     /**
      * Отправка данных на сервер
      * от клиента к серверу:
-     * {command: 'command_name', room: 'room_name', player: 'player_name', data: {d: 1, a: 2...}}
+     * {command: 'command_name', room: 'room_name', player: 'player_id', data: {d: 1, a: 2...}}
      * */
     this.send = function(command, data){
         this.socket.send((typeof data == 'string')?data:JSON.stringify({
             command: command,
             room: this.player.room,
-            player: this.player.name,
+            player: this.player.id,
             data: data || null
         }));
     };

@@ -5,10 +5,10 @@
 /**
  * Класс игрока
  * @param scene {Scene} сцена на который существует игрок
- * @param render {Function} рендеринг игрока
  * @param params {Object} дополнительные параметры
  * */
-var Player = function(scene, render, params){
+var Player = function(scene, params){
+    this.id = 0;
     //@abstract
     this.socket = null;
     //можно ли отсылать серверу свои координаты
@@ -41,8 +41,6 @@ var Player = function(scene, render, params){
     this.grounded = false;
     //Сцена
     this.scene = scene;
-    //Функция рендеринга
-    this._render = render;
     //2D контекст
     this.ctx = this.scene.ctx;
     //Имя игрока
@@ -53,6 +51,22 @@ var Player = function(scene, render, params){
     this.canRender = true;
     //комната
     this.room = null;
+
+    /**
+     * Отрисовка игрока на сцене
+     * */
+    this._render = function(){
+        this.ctx.drawImage(this.level.sprites.yoba, this.x, this.y);
+        this.ctx.font = "13px Arial";
+        this.ctx.fillStyle = "#ffffff";
+        this.ctx.textAlign = "center";
+        this.ctx.lineWidth = 3;
+        this.ctx.strokeStyle = '#000000';
+        var x = this.x+(this.width/2);
+        var y = this.y-5;
+        this.ctx.strokeText(this.name, x, y);
+        this.ctx.fillText(this.name, x, y);
+    };
 
     /**
      * Включение управления клавишами
@@ -191,8 +205,9 @@ var Player = function(scene, render, params){
         this.room = room;
         this.socket = new WSClient(url, th);
         this.socket.on('connect', function(){
-            th.socket.send('newPlayer');
+            th.socket.send('newPlayer', {name: th.name});
             th.socket.on('init', function(data){
+                th.id = data.id;
                 cb(data.level, data.shadows, data.matrixChanges);
             });
         });
@@ -210,6 +225,12 @@ var Player = function(scene, render, params){
         }
     };
 
+    /**
+     * Изменение матрицы уровня
+     * @param {Number} row строка
+     * @param {Number} col чейка
+     * @param {Number} value значение
+     * */
     this.changeMatrix = function(row, col, value){
         this.socket.send('changeMatrix', {
             row: row,

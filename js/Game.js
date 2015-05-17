@@ -50,16 +50,21 @@ var Game = function (scene, player, levels){
         };
 
         level.afterLose = function () {
+            th.player.x = th.level.playerPos[0];
+            th.player.y = th.level.playerPos[1];
+
             th.eachPlayers(function(player){
                 player.canRender = false;
             });
 
             setTimeout(function(){
-                th.currentLevel--;
+                /*th.currentLevel--;
                 th.nextLevel(function () {
                     level = null;
                     th.loadLevel(this);
-                });
+                });*/
+                th.player.canRender = true;
+                th.level.removeForRender(th.level.losePic);
             }, 800);
         };
 
@@ -154,20 +159,21 @@ var Game = function (scene, player, levels){
     this.addShadow = function(shadow){
         if(!this.shadows[shadow[0]]){
             this.shadows[shadow[0]] = new Shadow(this.scene, this.level, {
-                name: shadow[0],
-                x: shadow[1],
-                y: shadow[2]
+                id: shadow[0],
+                name: shadow[1],
+                x: shadow[2],
+                y: shadow[3]
             });
         }
     };
 
     /**
      * Удаление тени
-     * @param {String} name имя тени
+     * @param {Number} id имя тени
      * */
-    this.removeShadow = function(name){
-        delete this.shadows[name];
-        this.shadows[name] = null;
+    this.removeShadow = function(id){
+        delete this.shadows[id];
+        this.shadows[id] = null;
     };
 
     /**
@@ -217,8 +223,6 @@ var Game = function (scene, player, levels){
             .on('coors', function(data){
                 if(th.shadows[data.shadow]){
                     th.shadows[data.shadow].addCoors(data.x, data.y);
-                }else{
-                    th.addShadow(data.shadow);
                 }
             })
             .on('matrixChange', function(data){

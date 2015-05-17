@@ -169,9 +169,7 @@ $(window).load(function(){
     });
 
     //Игрок
-    var player = new Player(test, function () {
-        this.ctx.drawImage(this.level.sprites.yoba, this.x, this.y);
-    }, {
+    var player = new Player(test, {
         radius: 16,
         offsetX: 32,
         offsetY: 32,
@@ -185,9 +183,7 @@ $(window).load(function(){
         }
     });
 
-    var player2 = new Player(test, function () {
-        this.ctx.drawImage(this.level.sprites.yoba2, this.x, this.y);
-    }, {
+    var player2 = new Player(test, {
         radius: 16,
         offsetX: 32,
         offsetY: 32,
