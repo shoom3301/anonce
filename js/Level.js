@@ -201,19 +201,23 @@ var Level = function(matrix, cellConstructors, sprites, params, onload){
 
     /**
      * Изменение матрицы
+     * @param {Player} player игрок инициатор изменения
      * @param {Number} row строка
      * @param {Number} col столбец
      * @param {Number} value значение
+     * @param {Boolean} silent уведомлять ли сервер об изменении матрицы
      * */
-    this.changeMatrix = function(row, col, value){
+    this.changeMatrix = function(player, row, col, value, silent){
         for(var i=0; i<this.activeCells.length; i++){
             if(this.activeCells[i].row == row && this.activeCells[i].col == col){
+                this.activeCells[i].check(player, (silent && value != this.activeCells[i].val()));
                 if(value == 0){
                     this.activeCells.remove(this.activeCells[i]);
                     this.passiveCells.push([col*this.cellSize, row*this.cellSize]);
                 }
             }
         }
+        this.originalMatrix[row][col] = value;
     };
 
     if(onload){

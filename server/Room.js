@@ -20,7 +20,9 @@ var Room = function(name, owner, level){
     //уровень
     this.level = require('../levels/'+this.levelName+'.js').init().load();
     //изменения матрицы
-    this.matrixChanges = [];
+    this.matrixChanges = function(){
+        return this.level.originalMatrix;
+    };
 
     /**
      * Добавление игрока в комнату

@@ -200,7 +200,7 @@ var Game = function (scene, player, levels){
                 if(matrixChanges[i]){
                     for(var v=0; v<matrixChanges[i].length; v++){
                         if(typeof matrixChanges[i][v] == 'number'){
-                            this.changeMatrix(i, v, matrixChanges[i][v]);
+                            this.changeMatrix(player, i, v, matrixChanges[i][v], true);
                         }
                     }
                 }
@@ -226,7 +226,7 @@ var Game = function (scene, player, levels){
                 }
             })
             .on('matrixChange', function(data){
-                th.level.changeMatrix(data.row, data.col, data.value);
+                th.level.changeMatrix(player, data.row, data.col, data.value, true);
             })
             .on('roomOff', function(){
                 th.canDraw = false;

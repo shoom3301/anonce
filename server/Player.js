@@ -45,7 +45,7 @@ var Player = function(name, socket){
                 id: this.id,
                 level: this.room.levelName,
                 shadows: this.room.getShadows(this),
-                matrixChanges: this.room.matrixChanges
+                matrixChanges: this.room.matrixChanges()
             }
         }));
         return this;

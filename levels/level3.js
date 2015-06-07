@@ -3,6 +3,7 @@
  */
 
 if(typeof require != 'undefined'){
+
     var Level = require('../js/Level.js');
 }
 
@@ -50,10 +51,13 @@ var level3 = {
         //бонус
         3: {
             name: 'bonus',
-            check: function (player, check) {
-                if (check) {
+            check: function (player, check, silent) {
+                if (check && !silent) {
                     this.destroy();
                     player.changeMatrix(this, 0);
+                }
+
+                if(silent || check){
                     player.level.bonusCount--;
                     if (player.level.bonusCount == 0) {
                         player.level.openGate();
@@ -67,7 +71,7 @@ var level3 = {
         //вороты выхода с уровня
         5: {
             name: 'gate',
-            check: function (player, check) {
+            check: function (player, check, silent) {
                 if (check) {
                     if (this.level.gateIsOpen) {
                         player.win();
@@ -82,7 +86,7 @@ var level3 = {
         7: {
             name: 'thorn',
             hardBlock: true,
-            check: function (player, check) {
+            check: function (player, check, silent) {
                 if (check) player.lose();
             }
         },

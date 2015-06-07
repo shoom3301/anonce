@@ -85,7 +85,7 @@ var Cell = function (row, col, width, height, level, params) {
     };
 
     this.val = function(value){
-        if(value){
+        if(typeof value != 'undefined'){
             this.level.originalMatrix[this.row][this.col] = value;
             return this;
         }else{
@@ -107,8 +107,9 @@ var Cell = function (row, col, width, height, level, params) {
         /**
          * проверка пересечения с игроком
          * @param {Player} player игрок
+         * @param {Boolean} silent синхронизировать ли с сервером
          * */
-        this.check = function (player) {
+        this.check = function (player, silent) {
             var dir = this.colCheck(player);
             if (dir === "l" || dir === "r") {
                 player.velX = 0;
@@ -121,15 +122,16 @@ var Cell = function (row, col, width, height, level, params) {
                 player.velY = 0;
             }
 
-            return this._check.apply(this, [player, dir]);
+            return this._check.apply(this, [player, dir, silent]);
         };
     } else {
         /**
          * проверка пересечения с игроком
          * @param {Player} player игрок
+         * @param {Boolean} silent синхронизировать ли с сервером
          * */
-        this.check = function (player) {
-            return this._check.apply(this, [player, this.colCheck(player)]);
+        this.check = function (player, silent) {
+            return this._check.apply(this, [player, this.colCheck(player), silent]);
         };
     }
 
