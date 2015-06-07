@@ -18,7 +18,8 @@ var Room = function(name, owner, level){
     //название уровня
     this.levelName = level;
     //уровень
-    this.level = require('../levels/'+this.levelName+'.js');
+    this.level = require('../levels/'+this.levelName+'.js').init().load();
+    //изменения матрицы
     this.matrixChanges = [];
 
     /**

@@ -29,7 +29,7 @@ window.addEventListener('load', function () {
             });
 
             //коннектимся к серверу
-            player.connect('ws://178.89.214.206:25565', $('#room_name').val(), $('#map').val(), function(lvl, shadows, matrixChanges){
+            player.connect('ws://2.132.137.85:25565', $('#room_name').val(), $('#map').val(), function(lvl, shadows, matrixChanges){
                 window.game = new Game(scene, player);
                 game.getLevel(lvl, function(){
                     game.initConnection(lvl, player, shadows, matrixChanges);

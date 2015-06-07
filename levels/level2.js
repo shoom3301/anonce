@@ -45,12 +45,12 @@ var level2 = {
             name: 'bonus',
             check: function (player, check) {
                 if (check) {
-                    this.destroy();
-                    player.changeMatrix(this.row, this.col, 0);
+                    //this.destroy();
+                    /*player.changeMatrix(this.row, this.col, 0);
                     player.level.bonusCount--;
                     if (player.level.bonusCount == 0) {
                         player.level.openGate();
-                    }
+                    }*/
                 }
             },
             constructor: function () {

@@ -55,13 +55,10 @@ var App = function(port){
         newPlayer: function(socket, room, id, data){
             var player = new Player(data.name, socket);
             //команды вызываются через метод apply, по этому this здесь используется правильно
-            //noinspection JSPotentiallyInvalidUsageOfThis
             if(!this.rooms[room]){
-                //noinspection JSPotentiallyInvalidUsageOfThis
                 this.rooms[room] = new Room(room, player, data.level);
                 console.log('Room `'+room+'` created! Owner - '+player.name+'.');
             }
-            //noinspection JSPotentiallyInvalidUsageOfThis
             this.rooms[room].addPlayer(player);
             player.init();
             return this;
@@ -71,18 +68,12 @@ var App = function(port){
          * @param {Player} player игрок
          * */
         removePlayer: function(player){
-            //noinspection JSPotentiallyInvalidUsageOfThis
             if(this.rooms[player.room.name]){
-                //noinspection JSPotentiallyInvalidUsageOfThis
                 player.room.removePlayer(player);
 
-                //noinspection JSPotentiallyInvalidUsageOfThis
                 if(player.room.owner.id == player.id){
-                    //noinspection JSPotentiallyInvalidUsageOfThis
                     player.room.destroy();
-                    //noinspection JSPotentiallyInvalidUsageOfThis
                     delete this.rooms[player.room.name];
-                    //noinspection JSPotentiallyInvalidUsageOfThis
                     this.rooms[player.room.name] = null;
                     console.log('Room `'+player.room.name+'` destroyed!');
                 }
@@ -97,9 +88,7 @@ var App = function(port){
          * @param {Object} data имя данные
          * */
         coors: function(socket, room, id, data){
-            //noinspection JSPotentiallyInvalidUsageOfThis
             if(this.rooms[room]){
-                //noinspection JSPotentiallyInvalidUsageOfThis
                 var player = this.rooms[room].players[id];
                 if(player) player.setCoors(data);
             }
@@ -110,25 +99,18 @@ var App = function(port){
          * @param {Object} socket соединение
          * @param {String} room имя комнаты
          * @param {String} id id игрока
-         * @param {Object} data имя данные
+         * @param {Object} data данные
          * */
         changeMatrix: function(socket, room, id, data){
-            //noinspection JSPotentiallyInvalidUsageOfThis
             var rm = this.rooms[room];
             if(rm){
-                if(rm.matrixChanges[data.row] && rm.matrixChanges[data.row][data.col] == data.val){
-                    if(rm.matrixChanges[data.row][data.col]){
-                        rm.matrixChanges[data.row].remove(data.col);
-                        if(rm.matrixChanges[data.row].length == 0){
-                            rm.matrixChanges.remove(data.row);
-                        }
+                var player = rm.players[id];
+                var cells = rm.level.activeCells;
+                for(var i=0; i<cells.length;i++){
+                    if(cells[i].row == data.cell.row && cells[i].col == data.cell.col && cells[i].val() != data.value){
+                        cells[i].val(data.value);
+                        rm.broadcast('matrixChange', {row: data.cell.row, col: data.cell.col, value: data.value}, player);
                     }
-                }else{
-                    if(!rm.matrixChanges[data.row]){
-                        rm.matrixChanges[data.row] = [];
-                    }
-                    rm.matrixChanges[data.row][data.col] = data.value;
-                    rm.broadcast('matrixChange', {row: data.row, col: data.col, value: data.value}, rm.players[id]);
                 }
             }
         }

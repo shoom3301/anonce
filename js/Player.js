@@ -228,14 +228,12 @@ var Player = function(scene, params){
 
     /**
      * Изменение матрицы уровня
-     * @param {Number} row строка
-     * @param {Number} col чейка
+     * @param {Cell} cell ячейка
      * @param {Number} value значение
      * */
-    this.changeMatrix = function(row, col, value){
+    this.changeMatrix = function(cell, value){
         this.socket.send('changeMatrix', {
-            row: row,
-            col: col,
+            cell: cell.getData(),
             value: value
         });
     };

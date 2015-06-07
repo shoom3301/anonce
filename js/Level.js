@@ -2,6 +2,10 @@
  * Created by Shoom on 13.05.15.
  */
 
+if(typeof require != 'undefined'){
+    var Cell = require('../js/Cell.js');
+}
+
 /**
  * Уровень в игре
  * @param {Array} matrix матрица уровня
@@ -15,10 +19,8 @@ var Level = function(matrix, cellConstructors, sprites, params, onload){
     this.scene = null;
     //сокращение для 2d контекста
     this.ctx = null;
-    //матрица
-    this.matrix = matrix;
     //Оригинальная матрица
-    this.originalMatrix = JSON.parse(JSON.stringify(matrix));
+    this.originalMatrix = matrix;
     //открыты ли ворота выхода с уровня
     this.gateIsOpen = false;
     //смещение сцены по X
@@ -32,9 +34,9 @@ var Level = function(matrix, cellConstructors, sprites, params, onload){
     //Размер ячейки в матрице
     this.cellSize = params.cellSize;
     //Ширина карты
-    this.width = this.matrix[0].length * this.cellSize;
+    this.width = this.originalMatrix[0].length * this.cellSize;
     //Высота карты
-    this.height = this.matrix.length * this.cellSize;
+    this.height = this.originalMatrix.length * this.cellSize;
     //Конструкторы для создания ячеек
     this.cellConstructors = cellConstructors;
     //Спрайты уровня
@@ -163,6 +165,8 @@ var Level = function(matrix, cellConstructors, sprites, params, onload){
                 this.passiveCells.push([this.cellSize * v, this.cellSize * i]);
             }
         });
+
+        return this;
     };
 
     /**
@@ -212,23 +216,28 @@ var Level = function(matrix, cellConstructors, sprites, params, onload){
         }
     };
 
-    //закрузка спрайтов
-    this.spritesInLoad = 0;
+    if(onload){
+        //закрузка спрайтов
+        this.spritesInLoad = 0;
 
-    var th = this;
-    for (var v in sprites) {
-        if (sprites.hasOwnProperty(v)) {
-            this.spritesInLoad++;
-            new Sprite(sprites[v], v, function () {
-                th.spritesInLoad--;
-                th.sprites[this.name] = this.img;
-                //После загрузки всех спрайтов загружаем уровень и вызываем callback
-                if (th.spritesInLoad == 0) {
-                    th.load();
-                    onload.apply(th);
-                }
-            });
-
+        var th = this;
+        for (var v in sprites) {
+            if (sprites.hasOwnProperty(v)) {
+                this.spritesInLoad++;
+                new Sprite(sprites[v], v, function () {
+                    th.spritesInLoad--;
+                    th.sprites[this.name] = this.img;
+                    //После загрузки всех спрайтов загружаем уровень и вызываем callback
+                    if (th.spritesInLoad == 0) {
+                        th.load();
+                        onload.apply(th);
+                    }
+                });
+            }
         }
     }
 };
+
+if(typeof module != 'undefined'){
+    module.exports = Level;
+}

@@ -35,7 +35,7 @@ var Cell = function (row, col, width, height, level, params) {
 
     //уничтожение блока
     this.destroy = function () {
-        this.level.matrix[this.row][this.col] = 0;
+        this.level.originalMatrix[this.row][this.col] = 0;
         this.level.passiveCells.push([this.x, this.y]);
         this.level.activeCells.remove(this);
     };
@@ -74,6 +74,23 @@ var Cell = function (row, col, width, height, level, params) {
             }
         }
         return colDir;
+    };
+
+    this.getData = function(){
+        return {
+            row: this.row,
+            col: this.col,
+            val: this.val()
+        };
+    };
+
+    this.val = function(value){
+        if(value){
+            this.level.originalMatrix[this.row][this.col] = value;
+            return this;
+        }else{
+            return this.level.originalMatrix[this.row][this.col];
+        }
     };
 
     //назначаем функцию рендеринга
@@ -119,3 +136,7 @@ var Cell = function (row, col, width, height, level, params) {
     //индивидуальный конструктор ячейки
     if (params.constructor) params.constructor.apply(this);
 };
+
+if(typeof module != 'undefined'){
+    module.exports = Cell;
+}

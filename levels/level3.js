@@ -2,6 +2,11 @@
  * Created by Shoom on 17.05.15.
  */
 
+if(typeof require != 'undefined'){
+    var Level = require('../js/Level.js');
+}
+
+
 /**
  * Created by Shoom on 14.05.15.
  */
@@ -48,7 +53,7 @@ var level3 = {
             check: function (player, check) {
                 if (check) {
                     this.destroy();
-                    player.changeMatrix(this.row, this.col, 0);
+                    player.changeMatrix(this, 0);
                     player.level.bonusCount--;
                     if (player.level.bonusCount == 0) {
                         player.level.openGate();
