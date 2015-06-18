@@ -44,10 +44,7 @@ var Game = function (scene, player, levels){
             });
 
             setTimeout(function(){
-                th.nextLevel(function () {
-                    level = null;
-                    th.loadLevel(this);
-                });
+
             }, 2000);
         };
 
@@ -60,11 +57,6 @@ var Game = function (scene, player, levels){
             });
 
             setTimeout(function(){
-                /*th.currentLevel--;
-                 th.nextLevel(function () {
-                 level = null;
-                 th.loadLevel(this);
-                 });*/
                 th.player.canRender = true;
                 th.level.removeForRender(th.level.losePic);
             }, 800);
@@ -75,6 +67,10 @@ var Game = function (scene, player, levels){
         this.eachPlayers(function(player){
             player.setLevel(level);
         });
+
+        this.level = level;
+
+        this.canDraw = true;
     };
 
     /**
@@ -100,8 +96,8 @@ var Game = function (scene, player, levels){
                 }
 
                 th.scene.ctx.restore();
-                requestAnimationFrame(draw);
             }
+            requestAnimationFrame(draw);
             var time = Date.now();
             fps.value = time-th.time;
             th.time = time;
@@ -116,36 +112,9 @@ var Game = function (scene, player, levels){
      * @param {Function} cb callback загрузки уровня
      * */
     this.getLevel = function (name, cb) {
-        include('levels/' + name + '.js?'+Date.now(), 'js', cb, function () {
-            th.nextLevel(function(){
-                th.loadLevel(this);
-            }, 0);
-        });
-    };
-
-    /**
-     * Следующий уровень
-     * @param {Function} cb callback загрузки уровня
-     * @param {Number} index номер уровня
-     * */
-    this.nextLevel = function (cb, index) {
-        //для тестирования уровней
-        if(!this.levels){
-            th.loadLevel(th.level);
-            th.level.removeForRender(th.level.losePic);
-            th.level.load();
-            return false;
-        }
-
-        this.currentLevel++;
-        if(typeof index != 'undefined') this.currentLevel = index;
-        var levelName = this.levels[this.currentLevel];
-
-        this.level = null;
-        this.getLevel(levelName, function () {
-            th.level = window[levelName].init(cb);
-        });
-        return this;
+        include('levels/' + name + '.js?'+Date.now(), 'js', function(){
+            window[name].init(cb);
+        }, function () { });
     };
 
     /**
@@ -192,13 +161,29 @@ var Game = function (scene, player, levels){
     };
 
     /**
+     * Пауза игры
+     * */
+    this.pause = function(){
+        this.canDraw = false;
+        var ctx = this.scene.ctx;
+        this.scene.clear();
+        ctx.fillStyle = '#545c71';
+        ctx.fillRect(0, 0, this.scene.width + this.scene.offsetX, this.scene.height + this.scene.offsetY);
+        ctx.font = "32px Arial";
+        ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "center";
+        ctx.fillText('Pause', this.scene.offsetX + (this.scene.width / 2), this.scene.offsetY + (this.scene.height / 2));
+        return this;
+    };
+
+    /**
      * Инициализация соединения
      * @param {String} lvl уровень
      * @param {Player} player игрок
      * @param {Array} shadows тени
      * @param {Array} matrixChanges изменеия матрицы
      * */
-    this.initConnection = function(lvl, player, shadows, matrixChanges){
+    this.initConnection = function(lvl, player, shadows, matrixChanges, room_is_paused){
         this.level = window[lvl].init(function(){
             th.loadLevel(this);
             for(var i=0; i<matrixChanges.length; i++){
@@ -211,7 +196,11 @@ var Game = function (scene, player, levels){
                 }
             }
             th.start();
-            player.canBroadcast = true;
+            if(room_is_paused){
+                th.pause();
+            }else{
+                player.canBroadcast = true;
+            }
         });
 
         for(var i=0; i<shadows.length; i++){
@@ -236,6 +225,15 @@ var Game = function (scene, player, levels){
             .on('roomOff', function(){
                 th.canDraw = false;
                 th.scene.clear();
+            })
+            .on('level_passed', function(data){
+                th.level.onWin(data.player);
+            }).on('change_level', function(data){
+                th.getLevel(data.level, function(){
+                    th.level.removeForRender(th.level.winPic);
+                    th.level = null;
+                    th.loadLevel(this);
+                });
             });
 
         return this;

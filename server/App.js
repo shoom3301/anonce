@@ -29,7 +29,7 @@ var App = function(port){
 
                 if(th.commands[command]){
                     var room = (info.room && th.rooms[info.room])?th.rooms[info.room]:null;
-                    var player = (room && info.player)?room.players[info.player]:null;
+                    var player = (room && typeof info.player!='undefined')?room.players[info.player]:null;
                     th.commands[command].apply(th, [socket, room, player, info]);
                 }
             });
@@ -39,6 +39,7 @@ var App = function(port){
                 var room = socket.player.room;
                 var player = socket.player;
                 if(room){
+                    console.log('Player `'+player.name+'` is disconnected from the room `'+room.name+'`');
                     room.removePlayer(player);
                     //Если игрок был овнером комнаты, то и комнату удаляем
                     if(room.owner.id == player.id){
@@ -74,11 +75,12 @@ var App = function(port){
             var new_player = new Player(params.data.name, socket);
 
             if(!room){
-                room = new Room(params.room, new_player, params.data.level);
+                this.rooms[params.room] = new Room(params.room, new_player, params.data.level, ['level1', 'level2', 'level3']);
                 console.log('Room `'+params.room+'` created! Owner - '+new_player.name+'.');
             }
 
-            room.addPlayer(new_player);
+            console.log('Player `'+new_player.name+'` is connected to the room `'+this.rooms[params.room].name+'`');
+            this.rooms[params.room].addPlayer(new_player);
             new_player.init();
             return this;
         },
@@ -90,7 +92,7 @@ var App = function(port){
          * @param {Object} params данные
          * */
         coors: function(socket, room, player, params){
-            if(room && player){
+            if(room){
                 player.setCoors(params.data);
             }
             return this;
@@ -119,11 +121,16 @@ var App = function(port){
          * @param {Object} socket соединение
          * @param {Room} room комната
          * @param {Player} player игрок
-         * @param {Object} params данные
          * */
-        iWon: function(socket, room, player, params){
-            if(room && player){
-                player.setCoors(params.data);
+        iWon: function(socket, room, player){
+            if(room && !room.paused){
+                room.broadcast('level_passed', {player: player.name});
+                room.paused = true;
+                setTimeout(function(){
+                    room.nextLevel();
+                    room.broadcast('change_level', {level: room.levelName});
+                    room.paused = false;
+                }, 10000);
             }
         }
     };

@@ -191,12 +191,12 @@ var Level = function(matrix, cellConstructors, sprites, params, onload){
 
     //Заставка победы
     this.winPic = function(){
-        this.endScreen('Победа - '+this.finalPlayer.name+'!', '#1051b2');
+        this.endScreen('Победа - '+this.finalPlayer+'!', '#1051b2');
     };
 
     //Заставка поражения
     this.losePic = function(){
-        this.endScreen('Поражение - '+this.finalPlayer.name+'!', '#b51717');
+        this.endScreen('Поражение - '+this.finalPlayer+'!', '#b51717');
     };
 
     /**

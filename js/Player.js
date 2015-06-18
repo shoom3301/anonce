@@ -176,7 +176,6 @@ var Player = function(scene, params){
      * Победа на карте
      * */
     this.win = function(){
-        this.level.onWin(this);
         this.socket.send('iWon');
     };
 
@@ -184,7 +183,7 @@ var Player = function(scene, params){
      * Поражение на карте
      * */
     this.lose = function(){
-        this.level.onLose(this);
+        this.level.onLose(this.name);
     };
 
     /**
@@ -212,7 +211,7 @@ var Player = function(scene, params){
             th.socket.send('newPlayer', {name: th.name, level: lvl});
             th.socket.on('init', function(data){
                 th.id = data.id;
-                cb(data.level, data.shadows, data.matrixChanges);
+                cb(data.level, data.shadows, data.matrixChanges, data.room_is_paused);
             });
         });
     };

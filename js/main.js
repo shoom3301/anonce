@@ -29,10 +29,10 @@ window.addEventListener('load', function () {
             });
 
             //коннектимся к серверу
-            player.connect('ws://localhost:25565', $('#room_name').val(), $('#map').val(), function(lvl, shadows, matrixChanges){
+            player.connect('ws://localhost:25565', $('#room_name').val(), $('#map').val(), function(lvl, shadows, matrixChanges, room_is_paused){
                 window.game = new Game(scene, player);
                 game.getLevel(lvl, function(){
-                    game.initConnection(lvl, player, shadows, matrixChanges);
+                    game.initConnection(lvl, player, shadows, matrixChanges, room_is_paused);
                 });
             });
         }

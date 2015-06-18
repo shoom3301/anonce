@@ -69,6 +69,6 @@ var Shadow = function(scene, level, params){
      * Поражение на карте
      * */
     this.lose = function(){
-        this.level.onLose(this);
+        this.level.onLose(this.name);
     };
 };

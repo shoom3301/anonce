@@ -3,7 +3,6 @@
  */
 
 if(typeof require != 'undefined'){
-
     var Level = require('../js/Level.js');
 }
 

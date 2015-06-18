@@ -1,6 +1,9 @@
 /**
  * Created by Shoom on 14.05.15.
  */
+if(typeof require != 'undefined'){
+    var Level = require('../js/Level.js');
+}
 
 var level1 = {
     matrix: [
@@ -31,14 +34,17 @@ var level1 = {
         //бонус
         3: {
             name: 'bonus',
-            check: function (player, check) {
-                if (check) {
-                    //this.destroy();
-                    /*player.changeMatrix(this.row, this.col, 0);
+            check: function (player, check, silent) {
+                if (check && !silent) {
+                    this.destroy();
+                    player.changeMatrix(this, 0);
+                }
+
+                if(silent || check){
                     player.level.bonusCount--;
                     if (player.level.bonusCount == 0) {
                         player.level.openGate();
-                    }*/
+                    }
                 }
             },
             constructor: function () {
@@ -48,7 +54,7 @@ var level1 = {
         //вороты выхода с уровня
         5: {
             name: 'gate',
-            check: function (player, check) {
+            check: function (player, check, silent) {
                 if (check) {
                     if (this.level.gateIsOpen) {
                         player.win();
@@ -63,7 +69,7 @@ var level1 = {
         7: {
             name: 'thorn',
             hardBlock: true,
-            check: function (player, check) {
+            check: function (player, check, silent) {
                 if (check) player.lose();
             }
         },
@@ -79,13 +85,13 @@ var level1 = {
         thorn: 'images/thorn.png',
         bonus: 'images/bonus.png'
     },
-    init: function(onload){
+    init: function (onload) {
         return new Level(this.matrix, this.cellConstructors, this.sprites, {
             cellSize: 32
         }, onload);
     }
 };
 
-if(typeof module != 'undefined'){
+if (typeof module != 'undefined') {
     module.exports = level1;
 }

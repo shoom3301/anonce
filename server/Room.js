@@ -6,9 +6,10 @@
  * Комната
  * @param {String} name название комнаты
  * @param {Player} owner владелец комнаты
- * @param {String} level название комнаты
+ * @param {String} start_level стартовый уровень
+ * @param {Array} levels массив названий уровней
  * */
-var Room = function(name, owner, level){
+var Room = function(name, owner, start_level, levels){
     //название комнаты
     this.name = name;
     //владелец комнаты
@@ -16,9 +17,13 @@ var Room = function(name, owner, level){
     //игроки в комнате
     this.players = [];
     //название уровня
-    this.levelName = level;
+    this.levelName = '';
     //уровень
-    this.level = require('../levels/'+this.levelName+'.js').init().load();
+    this.level = null;
+    //массив названий уровней
+    this.levels = levels;
+    //комната на паузе
+    this.paused = false;
     //изменения матрицы
     this.matrixChanges = function(){
         return this.level.originalMatrix;
@@ -106,11 +111,37 @@ var Room = function(name, owner, level){
     };
 
     /**
+     * Смена уровня на следующий
+     * */
+    this.nextLevel = function(){
+        var next_level = this.levelName;
+        if(this.levels){
+            next_level = this.levels[this.levels.indexOf(this.levelName)+1] || this.levels[0];
+        }
+        this.loadLevel(next_level);
+        return this;
+    };
+
+    /**
+     * Загрузка уровня
+     * @param {String} level_name название уровня
+     * */
+    this.loadLevel = function(level_name){
+        console.log('Level of room `'+this.name+'` changed to `'+level_name+'`');
+        this.levelName = level_name;
+        this.level = require('../levels/'+level_name+'.js').init().load();
+        return this;
+    };
+
+    /**
      * Удаление комнаты
      * */
     this.destroy = function(){
         this.broadcast('roomOff');
     };
+
+    //Загрузка уровня
+    this.loadLevel(start_level);
 };
 
 module.exports = Room;
