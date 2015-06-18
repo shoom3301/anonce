@@ -27,6 +27,8 @@ var Game = function (scene, player, levels){
     this.shadows = {};
     //можно ли рендерить
     this.canDraw = true;
+    //время последнего рендеринга (для вывода fps)
+    this.time = Date.now();
 
     //игра
     var th = this;
@@ -59,10 +61,10 @@ var Game = function (scene, player, levels){
 
             setTimeout(function(){
                 /*th.currentLevel--;
-                th.nextLevel(function () {
-                    level = null;
-                    th.loadLevel(this);
-                });*/
+                 th.nextLevel(function () {
+                 level = null;
+                 th.loadLevel(this);
+                 });*/
                 th.player.canRender = true;
                 th.level.removeForRender(th.level.losePic);
             }, 800);
@@ -80,7 +82,7 @@ var Game = function (scene, player, levels){
      * */
     this.start = function () {
         this.started = true;
-
+        var fps = document.getElementById('fps');
         function draw() {
             if(th.canDraw){
                 th.scene.ctx.save();
@@ -100,6 +102,9 @@ var Game = function (scene, player, levels){
                 th.scene.ctx.restore();
                 requestAnimationFrame(draw);
             }
+            var time = Date.now();
+            fps.value = time-th.time;
+            th.time = time;
         }
 
         draw();

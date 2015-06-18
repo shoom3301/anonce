@@ -34,6 +34,10 @@ var App = function(port){
             socket.on("close", function () {
                 if(socket.player) th.commands.removePlayer.apply(th, [socket.player]);
             });
+
+            //если не вешать слушатель на это событие, приложение падает в ошибку
+            socket.on("error", function () {
+            });
         });
 
         this.server.listen(port);
@@ -96,6 +100,7 @@ var App = function(port){
         },
         /**
          * Изменение матрицы
+         * @this App
          * @param {Object} socket соединение
          * @param {String} room имя комнаты
          * @param {String} id id игрока
@@ -112,6 +117,12 @@ var App = function(port){
                         rm.broadcast('matrixChange', {row: data.cell.row, col: data.cell.col, value: data.value}, player);
                     }
                 }
+            }
+        },
+        iWon: function(socket, room, id, data){
+            if(this.rooms[room]){
+                var player = this.rooms[room].players[id];
+                if(player) player.setCoors(data);
             }
         }
     };

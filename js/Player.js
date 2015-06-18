@@ -51,6 +51,8 @@ var Player = function(scene, params){
     this.canRender = true;
     //комната
     this.room = null;
+    this.recieveTime = Date.now();
+    this.recieveDelta = 20;
 
     /**
      * Отрисовка игрока на сцене
@@ -175,6 +177,7 @@ var Player = function(scene, params){
      * */
     this.win = function(){
         this.level.onWin(this);
+        this.socket.send('iWon');
     };
 
     /**
@@ -218,7 +221,9 @@ var Player = function(scene, params){
      * Отправка координат на сервер
      * */
     this.sendPos = function(){
-        if(this.canBroadcast){
+        var time = Date.now();
+        if(this.canBroadcast && time-this.recieveTime>=this.recieveDelta){
+            this.recieveTime = time;
             this.socket.send('coors', {
                 x: this.x,
                 y: this.y

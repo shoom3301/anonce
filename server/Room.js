@@ -32,6 +32,8 @@ var Room = function(name, owner, level){
         this.players.push(player);
         player.room = this;
         player.id = this.players.length-1;
+        player.x = this.level.playerPos[0];
+        player.y = this.level.playerPos[1];
         this.broadcast('newPlayer', {player: [player.id, player.name, player.x, player.y]}, player);
         return this;
     };
@@ -45,17 +47,6 @@ var Room = function(name, owner, level){
         this.broadcast('leavePlayer', {player: player.id});
         player = null;
         return this;
-    };
-
-    /**
-     * Получение игрока по имени
-     * @param {String} name имя игрока
-     * */
-    this.getPlayer = function(name){
-        for(var i=0; i<this.players.length; i++){
-            if(this.players[i].name == name) return this.players[i];
-        }
-        return false;
     };
 
     /**

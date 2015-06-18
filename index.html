@@ -28,15 +28,15 @@
 <div id="main">
     <div id="createRoom">
         <div>
-            <label>Логин:</label>
-            <input type="text" id="my_name" value="anon">
+            <label for="my_name">Логин:</label>
+            <input type="text" id="my_name" value="anon"/>
         </div>
         <div>
-            <label>Название комнаты:</label>
-            <input type="text" id="room_name" value="public">
+            <label for="room_name">Название комнаты:</label>
+            <input type="text" id="room_name" value="public"/>
         </div>
         <div>
-            <label>Карта:</label>
+            <label for="map">Карта:</label>
             <select id="map">
                 <option value="level1">level 1</option>
                 <option value="level2">level 2</option>
@@ -45,6 +45,10 @@
         </div>
         <div>
             <button id="connect_to_room">Подключиться</button>
+        </div>
+        <div>
+            <label for="fps">FPS:</label>
+            <input type="text" id="fps"/>
         </div>
     </div>
     <canvas id="scene"></canvas>
