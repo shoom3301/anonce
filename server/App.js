@@ -27,12 +27,26 @@ var App = function(port){
                 var info = JSON.parse(str);
                 var command = info.command;
 
-                if(th.commands[command]) th.commands[command].apply(th, [socket, info.room, info.player, info.data]);
+                if(th.commands[command]){
+                    var room = (info.room && th.rooms[info.room])?th.rooms[info.room]:null;
+                    var player = (room && info.player)?room.players[info.player]:null;
+                    th.commands[command].apply(th, [socket, room, player, info]);
+                }
             });
 
             //при закрытии соединения удаляем игрока
             socket.on("close", function () {
-                if(socket.player) th.commands.removePlayer.apply(th, [socket.player]);
+                var room = socket.player.room;
+                var player = socket.player;
+                if(room){
+                    room.removePlayer(player);
+                    //Если игрок был овнером комнаты, то и комнату удаляем
+                    if(room.owner.id == player.id){
+                        console.log('Room `'+room.name+'` destroyed!');
+                        room.destroy();
+                        delete th.rooms[room.name];
+                    }
+                }
             });
 
             //если не вешать слушатель на это событие, приложение падает в ошибку
@@ -52,77 +66,64 @@ var App = function(port){
         /**
          * Вход нового игрока в комнату
          * @param {Object} socket соединение
-         * @param {String} room имя комнаты
-         * @param {String} id id игрока
-         * @param {Object} data данные
-         * */
-        newPlayer: function(socket, room, id, data){
-            var player = new Player(data.name, socket);
-            //команды вызываются через метод apply, по этому this здесь используется правильно
-            if(!this.rooms[room]){
-                this.rooms[room] = new Room(room, player, data.level);
-                console.log('Room `'+room+'` created! Owner - '+player.name+'.');
-            }
-            this.rooms[room].addPlayer(player);
-            player.init();
-            return this;
-        },
-        /**
-         * Удаление игрока
+         * @param {Room} room комната
          * @param {Player} player игрок
+         * @param {Object} params данные
          * */
-        removePlayer: function(player){
-            if(this.rooms[player.room.name]){
-                player.room.removePlayer(player);
+        newPlayer: function(socket, room, player, params){
+            var new_player = new Player(params.data.name, socket);
 
-                if(player.room.owner.id == player.id){
-                    player.room.destroy();
-                    delete this.rooms[player.room.name];
-                    this.rooms[player.room.name] = null;
-                    console.log('Room `'+player.room.name+'` destroyed!');
-                }
+            if(!room){
+                room = new Room(params.room, new_player, params.data.level);
+                console.log('Room `'+params.room+'` created! Owner - '+new_player.name+'.');
+            }
+
+            room.addPlayer(new_player);
+            new_player.init();
+            return this;
+        },
+        /**
+         * Вход нового игрока в комнату
+         * @param {Object} socket соединение
+         * @param {Room} room комната
+         * @param {Player} player игрок
+         * @param {Object} params данные
+         * */
+        coors: function(socket, room, player, params){
+            if(room && player){
+                player.setCoors(params.data);
             }
             return this;
         },
         /**
-         * Координаты
+         * Вход нового игрока в комнату
          * @param {Object} socket соединение
-         * @param {String} room имя комнаты
-         * @param {String} id id игрока
-         * @param {Object} data имя данные
+         * @param {Room} room комната
+         * @param {Player} player игрок
+         * @param {Object} params данные
          * */
-        coors: function(socket, room, id, data){
-            if(this.rooms[room]){
-                var player = this.rooms[room].players[id];
-                if(player) player.setCoors(data);
-            }
-            return this;
-        },
-        /**
-         * Изменение матрицы
-         * @this App
-         * @param {Object} socket соединение
-         * @param {String} room имя комнаты
-         * @param {String} id id игрока
-         * @param {Object} data данные
-         * */
-        changeMatrix: function(socket, room, id, data){
-            var rm = this.rooms[room];
-            if(rm){
-                var player = rm.players[id];
-                var cells = rm.level.activeCells;
+        changeMatrix: function(socket, room, player, params){
+            if(room){
+                var data = params.data;
+                var cells = room.level.activeCells;
                 for(var i=0; i<cells.length;i++){
                     if(cells[i].row == data.cell.row && cells[i].col == data.cell.col && cells[i].val() != data.value){
                         cells[i].val(data.value);
-                        rm.broadcast('matrixChange', {row: data.cell.row, col: data.cell.col, value: data.value}, player);
+                        room.broadcast('matrixChange', {row: data.cell.row, col: data.cell.col, value: data.value}, player);
                     }
                 }
             }
         },
-        iWon: function(socket, room, id, data){
-            if(this.rooms[room]){
-                var player = this.rooms[room].players[id];
-                if(player) player.setCoors(data);
+        /**
+         * Вход нового игрока в комнату
+         * @param {Object} socket соединение
+         * @param {Room} room комната
+         * @param {Player} player игрок
+         * @param {Object} params данные
+         * */
+        iWon: function(socket, room, player, params){
+            if(room && player){
+                player.setCoors(params.data);
             }
         }
     };
