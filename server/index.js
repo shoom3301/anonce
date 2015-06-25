@@ -8,7 +8,7 @@ Array.prototype.remove = function(i){
 
 var App = require('./App.js');
 
-var app = new App(25565);
+var app = new App(8801);
 app.createServer();
 
 console.log('Server started!');
