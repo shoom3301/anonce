@@ -1,7 +1,7 @@
 /**
  * Created by Shoom on 14.05.15.
  */
-if(typeof require != 'undefined'){
+if (typeof require != 'undefined') {
     var Level = require('../js/Level.js');
 }
 
@@ -52,7 +52,7 @@ var level2 = {
                     player.changeMatrix(this, 0);
                 }
 
-                if(silent || check){
+                if (silent || check) {
                     player.level.bonusCount--;
                     if (player.level.bonusCount == 0) {
                         player.level.openGate();

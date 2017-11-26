@@ -58,25 +58,25 @@ var Cell = function (row, col, width, height, level, params) {
             if (oX >= oY) {
                 if (vY > 0) {
                     colDir = "t";
-                    if(this.hardBlock) player.y += oY;
+                    if (this.hardBlock) player.y += oY;
                 } else {
                     colDir = "b";
-                    if(this.hardBlock) player.y -= oY;
+                    if (this.hardBlock) player.y -= oY;
                 }
             } else {
                 if (vX > 0) {
                     colDir = "l";
-                    if(this.hardBlock) player.x += oX;
+                    if (this.hardBlock) player.x += oX;
                 } else {
                     colDir = "r";
-                    if(this.hardBlock) player.x -= oX;
+                    if (this.hardBlock) player.x -= oX;
                 }
             }
         }
         return colDir;
     };
 
-    this.getData = function(){
+    this.getData = function () {
         return {
             row: this.row,
             col: this.col,
@@ -84,11 +84,11 @@ var Cell = function (row, col, width, height, level, params) {
         };
     };
 
-    this.val = function(value){
-        if(typeof value != 'undefined'){
+    this.val = function (value) {
+        if (typeof value !== 'undefined') {
             this.level.originalMatrix[this.row][this.col] = value;
             return this;
-        }else{
+        } else {
             return this.level.originalMatrix[this.row][this.col];
         }
     };
@@ -103,7 +103,7 @@ var Cell = function (row, col, width, height, level, params) {
     }
 
     //У твердых блоков корректируем положение игрока и затем обрабатываем индивидуальный callback
-    if (this.hardBlock){
+    if (this.hardBlock) {
         /**
          * проверка пересечения с игроком
          * @param {Player} player игрок
@@ -139,6 +139,6 @@ var Cell = function (row, col, width, height, level, params) {
     if (params.constructor) params.constructor.apply(this);
 };
 
-if(typeof module != 'undefined'){
+if (typeof module !== 'undefined') {
     module.exports = Cell;
 }

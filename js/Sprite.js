@@ -8,12 +8,12 @@
  * @param {String} name название спрайта
  * @param {Function} onload callback загрузки картинки
  * */
-var Sprite = function(src, name, onload){
+var Sprite = function (src, name, onload) {
     this.img = new Image();
     this.img.src = src;
     this.name = name;
     var th = this;
-    this.img.addEventListener('load', function(){
-        if(onload) onload.apply(th);
+    this.img.addEventListener('load', function () {
+        if (onload) onload.apply(th);
     });
 };

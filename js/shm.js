@@ -37,17 +37,17 @@ window.DOMRelative = {
  * */
 function include(path, type, callback, onerror) {
     var access = true;
-    var arr = (type == 'css') ? 'styleSheets' : 'scripts';
+    var arr = (type === 'css') ? 'styleSheets' : 'scripts';
 
     for (var i = 0; i < document[arr].length; i++) {
         var stl = document[arr][i];
-        if (stl && (stl.href || stl.src) && (((type == 'css') ? stl.href : stl.getAttribute('src')) == path)) access = false;
+        if (stl && (stl.href || stl.src) && (((type === 'css') ? stl.href : stl.getAttribute('src')) === path)) access = false;
     }
     if (access) {
-        var script = document.createElement((type == 'css') ? 'link' : 'script');
-        script.type = 'text/' + (type == 'css' ? 'css' : (type == 'template') ? type : 'javascript');
+        var script = document.createElement((type === 'css') ? 'link' : 'script');
+        script.type = 'text/' + (type === 'css' ? 'css' : (type === 'template') ? type : 'javascript');
 
-        if (type == 'css') {
+        if (type === 'css') {
             script.rel = 'stylesheet';
             script.href = path;
         } else {
@@ -102,7 +102,7 @@ function parseURL(a) {
  * Клонирование объекта
  * */
 function clone(obj) {
-    if (null == obj || "object" != typeof obj) return obj;
+    if (null === obj || "object" !== typeof obj) return obj;
     var copy = obj.constructor();
     for (var attr in obj) {
         if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
@@ -127,16 +127,16 @@ function getRandomColor() {
  */
 jQuery.fn.windowHeight = function (forever) {
     var th = this;
-    if ((forever == true && this.caller) || forever == false) {
+    if ((forever === true && this.caller) || forever === false) {
         window[removeEventListener ? 'removeEventListener' : 'detachEvent']('resize', this.caller, false);
-        if (forever == false) return this;
+        if (forever === false) return this;
     }
     this.caller = function () {
         return th.each(function () {
             this.style.height = window.innerHeight + 'px';
         });
     };
-    if (forever == true) {
+    if (forever === true) {
         window[addEventListener ? 'addEventListener' : 'attachEvent']('resize', this.caller, false);
     }
     return this.caller();
@@ -182,8 +182,8 @@ var V = {
     },
     rect: function (x, y, w, h) {
         return {
-            right: V.vector({x: x+w, y: y}, {x: x+w, y: y+h}),
-            bottom: V.vector({x: x, y: y+h}, {x: x+w, y: y+h})
+            right: V.vector({x: x + w, y: y}, {x: x + w, y: y + h}),
+            bottom: V.vector({x: x, y: y + h}, {x: x + w, y: y + h})
         };
     }
 };

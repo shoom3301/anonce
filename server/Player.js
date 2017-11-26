@@ -7,7 +7,7 @@
  * @param {String} name имя игрока
  * @param {Object} socket ws соединение
  * */
-var Player = function(name, socket){
+var Player = function (name, socket) {
     //id
     this.id = 0;
     //имя
@@ -28,7 +28,7 @@ var Player = function(name, socket){
      * Изменение координат игрока
      * @param {Object} coors координаты
      * */
-    this.setCoors = function(coors){
+    this.setCoors = function (coors) {
         this.x = coors.x;
         this.y = coors.y;
         this.room.newCoors(this);
@@ -38,7 +38,7 @@ var Player = function(name, socket){
     /**
      * Инициализация игрока
      * */
-    this.init = function(){
+    this.init = function () {
         this.socket.sendText(JSON.stringify({
             command: 'init',
             data: {

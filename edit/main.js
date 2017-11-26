@@ -9,14 +9,14 @@ var curpos = {x: 16, y: 16};
 var matrix = [];
 var max_y = 0;
 
-var on_srite_load = function(){
+var on_srite_load = function () {
     var blocks = document.getElementById('blocks');
     var block = document.createElement('div');
-    block.style.width = cell_size+'px';
-    block.style.height = cell_size+'px';
-    block.style.backgroundImage = 'url("'+this.img.src+'")';
+    block.style.width = cell_size + 'px';
+    block.style.height = cell_size + 'px';
+    block.style.backgroundImage = 'url("' + this.img.src + '")';
     block.name = this.name;
-    block.onclick = function(){
+    block.onclick = function () {
         current_block.el.className = '';
         current_block.el = this;
         current_block.name = this.name;
@@ -24,7 +24,7 @@ var on_srite_load = function(){
     };
     blocks.appendChild(block);
 
-    if(!current_block) current_block = {
+    if (!current_block) current_block = {
         name: this.name,
         el: block
     };
@@ -56,16 +56,16 @@ var sl = {
     9: 'player'
 };
 
-function get_matrix(){
+function get_matrix() {
     for (var i = 0; i < matrix.length; i++) {
-        if(!matrix[i]){
+        if (!matrix[i]) {
             matrix[i] = [];
-            for(var q=0;q<max_y;q++){
+            for (var q = 0; q < max_y; q++) {
                 matrix[i][q] = 0;
             }
-        }else{
+        } else {
             for (var v = 0; v < matrix[i].length; v++) {
-                if(!matrix[i][v]){
+                if (!matrix[i][v]) {
                     matrix[i][v] = 0;
                 }
             }
@@ -77,7 +77,7 @@ function get_matrix(){
     return JSON.parse(res.value);
 }
 
-$(window).load(function(){
+$(window).load(function () {
     var $sc_width = $('#sc_width');
     var $sc_height = $('#sc_height');
     var scene = document.getElementById('scene');
@@ -86,15 +86,15 @@ $(window).load(function(){
     var clear_mode = false;
 
     window.res = document.getElementById('res');
-    res.addEventListener('change', function(){
+    res.addEventListener('change', function () {
         matrix = JSON.parse(res.value);
         max_y = 0;
-        for(var i=0;i<matrix.length;i++){
-            if(matrix[i] && max_y<matrix[i].length) max_y = matrix[i].length;
+        for (var i = 0; i < matrix.length; i++) {
+            if (matrix[i] && max_y < matrix[i].length) max_y = matrix[i].length;
         }
 
-        width = max_y*cell_size;
-        height = matrix.length*cell_size;
+        width = max_y * cell_size;
+        height = matrix.length * cell_size;
 
         $sc_width.val(width);
         $sc_height.val(height);
@@ -103,12 +103,12 @@ $(window).load(function(){
         scene.height = height;
     });
 
-    $sc_width.change(function(){
+    $sc_width.change(function () {
         width = $sc_width.val();
         scene.width = width;
     });
 
-    $sc_height.change(function(){
+    $sc_height.change(function () {
         height = $sc_height.val();
         scene.height = height;
     });
@@ -121,25 +121,25 @@ $(window).load(function(){
 
     current_block.el.className = 'active';
 
-    scene.addEventListener('mousemove', function(evt) {
+    scene.addEventListener('mousemove', function (evt) {
         var rect = this.getBoundingClientRect();
         curpos = {
             x: evt.clientX - rect.left,
             y: evt.clientY - rect.top
         };
-        }, false);
+    }, false);
 
-    scene.addEventListener('mousedown', function(evt) {
+    scene.addEventListener('mousedown', function (evt) {
         can_draw = true;
     }, false);
 
-    scene.addEventListener('mouseup', function(evt) {
+    scene.addEventListener('mouseup', function (evt) {
         can_draw = false;
     }, false);
 
-    scene.addEventListener('mousewheel', function(e) {
-        var el = current_block.el[(e.wheelDelta>0?'next':'previous')+'Sibling'];
-        if(el){
+    scene.addEventListener('mousewheel', function (e) {
+        var el = current_block.el[(e.wheelDelta > 0 ? 'next' : 'previous') + 'Sibling'];
+        if (el) {
             el.onclick();
         }
 
@@ -148,14 +148,14 @@ $(window).load(function(){
     }, false);
 
     window.addEventListener('keydown', function (e) {
-        if(e.keyCode == 16){
+        if (e.keyCode == 16) {
             clear_mode = true;
         }
     });
 
     //при отжатии клавиши
     window.addEventListener('keyup', function (e) {
-        if(e.keyCode == 16){
+        if (e.keyCode == 16) {
             clear_mode = false;
         }
     });
@@ -201,71 +201,71 @@ $(window).load(function(){
     var game = new Game(test, player);
 
 
-    document.getElementById('load_inp').onclick = function(){
+    document.getElementById('load_inp').onclick = function () {
         var lvl = get_matrix();
         game.level = null;
-        game.level = default_level(lvl, function(){
+        game.level = default_level(lvl, function () {
             game.loadLevel(this);
-            if(!game.started){
+            if (!game.started) {
                 game.start();
                 game.addPlayer(player2);
             }
         });
     };
 
-    function draw_cell(){
-        var pos = [Math.floor(curpos.x/cell_size), Math.floor(curpos.y/cell_size)];
-        if(!matrix[pos[1]]) matrix[pos[1]] = [];
-        if(clear_mode){
+    function draw_cell() {
+        var pos = [Math.floor(curpos.x / cell_size), Math.floor(curpos.y / cell_size)];
+        if (!matrix[pos[1]]) matrix[pos[1]] = [];
+        if (clear_mode) {
             matrix[pos[1]][pos[0]] = null;
-        }else{
+        } else {
             matrix[pos[1]][pos[0]] = indexes[current_block.name];
-            if(max_y<pos[0]) max_y = pos[0];
+            if (max_y < pos[0]) max_y = pos[0];
         }
     }
 
-    function grid(){
-        var h_count = Math.round(width/cell_size);
-        var v_count = Math.round(height/cell_size);
+    function grid() {
+        var h_count = Math.round(width / cell_size);
+        var v_count = Math.round(height / cell_size);
 
-        for(var i=0;i<h_count;i++){
+        for (var i = 0; i < h_count; i++) {
             ctx.beginPath();
-            ctx.moveTo(i*cell_size, 0);
-            ctx.lineTo(i*cell_size, height);
+            ctx.moveTo(i * cell_size, 0);
+            ctx.lineTo(i * cell_size, height);
             ctx.stroke();
         }
 
-        for(var s=0;s<v_count;s++){
+        for (var s = 0; s < v_count; s++) {
             ctx.beginPath();
-            ctx.moveTo(0, s*cell_size);
-            ctx.lineTo(width, s*cell_size);
+            ctx.moveTo(0, s * cell_size);
+            ctx.lineTo(width, s * cell_size);
             ctx.stroke();
         }
     }
 
-    function cursor(){
-        ctx.drawImage(clear_mode?clear_sprite.img:sprites[current_block.name].img, curpos.x-(cell_size/2), curpos.y-(cell_size/2));
+    function cursor() {
+        ctx.drawImage(clear_mode ? clear_sprite.img : sprites[current_block.name].img, curpos.x - (cell_size / 2), curpos.y - (cell_size / 2));
     }
 
-    function draw_matrix(){
+    function draw_matrix() {
         for (var i = 0; i < matrix.length; i++) {
             var row = matrix[i];
-            if(row){
+            if (row) {
                 for (var v = 0; v < row.length; v++) {
                     var wall = row[v];
-                    if(wall){
-                        ctx.drawImage(sprites[sl[wall]].img, v*cell_size, i*cell_size)
+                    if (wall) {
+                        ctx.drawImage(sprites[sl[wall]].img, v * cell_size, i * cell_size)
                     }
                 }
             }
         }
     }
 
-    function draw(){
+    function draw() {
         ctx.save();
         ctx.clearRect(0, 0, width, height);
         grid();
-        if(can_draw) draw_cell();
+        if (can_draw) draw_cell();
         draw_matrix();
         cursor();
         ctx.restore();

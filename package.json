@@ -1,0 +1,27 @@
+{
+  "name": "anonce",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server/index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "nodejs-websocket": "1.7.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shoom3301/anonce.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shoom3301/anonce/issues"
+  },
+  "homepage": "https://github.com/shoom3301/anonce#readme"
+}

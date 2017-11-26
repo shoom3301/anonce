@@ -7,7 +7,7 @@
  * @param scene {Scene} сцена на который существует игрок
  * @param params {Object} дополнительные параметры
  * */
-var Player = function(scene, params){
+var Player = function (scene, params) {
     this.id = 0;
     //@abstract
     this.socket = null;
@@ -57,15 +57,15 @@ var Player = function(scene, params){
     /**
      * Отрисовка игрока на сцене
      * */
-    this._render = function(){
+    this._render = function () {
         this.ctx.drawImage(this.level.sprites.yoba, this.x, this.y);
         this.ctx.font = "13px Arial";
         this.ctx.fillStyle = "#ffffff";
         this.ctx.textAlign = "center";
         this.ctx.lineWidth = 3;
         this.ctx.strokeStyle = '#000000';
-        var x = this.x+(this.width/2);
-        var y = this.y-5;
+        var x = this.x + (this.width / 2);
+        var y = this.y - 5;
         this.ctx.strokeText(this.name, x, y);
         this.ctx.fillText(this.name, x, y);
     };
@@ -73,13 +73,13 @@ var Player = function(scene, params){
     /**
      * Включение управления клавишами
      * */
-    this.keyControls = function(){
+    this.keyControls = function () {
         var th = this;
-        this.scene.on('keydown', function(keyCode){
+        this.scene.on('keydown', function (keyCode) {
             th.keys[keyCode] = true;
         });
 
-        this.scene.on('keyup', function(keyCode){
+        this.scene.on('keyup', function (keyCode) {
             th.keys[keyCode] = false;
         });
     };
@@ -87,13 +87,13 @@ var Player = function(scene, params){
     /**
      * Движение игрока
      * */
-    this.move = function(){
+    this.move = function () {
         //Прыжок
         if (this.keys[this.controls.jump]) {
-            if(!this.jumping && this.grounded){
+            if (!this.jumping && this.grounded) {
                 this.jumping = true;
                 this.grounded = false;
-                this.velY = -this.speed*2;
+                this.velY = -this.speed * 2;
             }
         }
         //Вправо
@@ -123,14 +123,14 @@ var Player = function(scene, params){
         this.y += this.velY;
 
         //Если выходим за сцену по горизонтали
-        if (this.x >= this.level.width-this.width) {
-            this.x = this.level.width-this.width;
+        if (this.x >= this.level.width - this.width) {
+            this.x = this.level.width - this.width;
         } else if (this.x <= 0) {
             this.x = 0;
         }
 
         //Если выходим за сцену по вертикали
-        if(this.y >= this.level.height-this.height){
+        if (this.y >= this.level.height - this.height) {
             this.y = this.level.height - this.height;
             this.jumping = false;
             this.grounded = true;
@@ -139,8 +139,8 @@ var Player = function(scene, params){
         this.x = modRound(this.x, 3);
         this.y = modRound(this.y, 3);
 
-        var ydiff = this.oldpos.y-this.y;
-        if(this.oldpos.x != this.x || (ydiff>0.5 || ydiff<-0.5)){
+        var ydiff = this.oldpos.y - this.y;
+        if (this.oldpos.x !== this.x || (ydiff > 0.5 || ydiff < -0.5)) {
             this.oldpos.x = this.x;
             this.oldpos.y = this.y;
             this.sendPos();
@@ -150,9 +150,9 @@ var Player = function(scene, params){
     /**
      * Проверка столкновения с активными блоками
      * */
-    this.checkCollision = function(){
-        for(var i=0; i<this.level.activeCells.length;i++){
-            if(this.level.cellIsVisible(this.level.activeCells[i])) this.level.activeCells[i].check(this);
+    this.checkCollision = function () {
+        for (var i = 0; i < this.level.activeCells.length; i++) {
+            if (this.level.cellIsVisible(this.level.activeCells[i])) this.level.activeCells[i].check(this);
         }
     };
 
@@ -160,7 +160,7 @@ var Player = function(scene, params){
      * Установка уровня
      * @param {Level} lvl уровень
      * */
-    this.setLevel = function(lvl){
+    this.setLevel = function (lvl) {
         this.velX = 0;
         this.velY = 0;
         this.keys = [];
@@ -175,22 +175,22 @@ var Player = function(scene, params){
     /**
      * Победа на карте
      * */
-    this.win = function(){
+    this.win = function () {
         this.socket.send('iWon');
     };
 
     /**
      * Поражение на карте
      * */
-    this.lose = function(){
+    this.lose = function () {
         this.level.onLose(this.name);
     };
 
     /**
      * Рендеринг игрока
      * */
-    this.render = function(){
-        if(this.canRender){
+    this.render = function () {
+        if (this.canRender) {
             this.move();
             this._render();
         }
@@ -203,13 +203,13 @@ var Player = function(scene, params){
      * @param {String} lvl уровень
      * @param {Function} cb callback
      * */
-    this.connect = function(url, room, lvl, cb){
+    this.connect = function (url, room, lvl, cb) {
         var th = this;
         this.room = room;
         this.socket = new WSClient(url, th);
-        this.socket.on('connect', function(){
+        this.socket.on('connect', function () {
             th.socket.send('newPlayer', {name: th.name, level: lvl});
-            th.socket.on('init', function(data){
+            th.socket.on('init', function (data) {
                 th.id = data.id;
                 cb(data.level, data.shadows, data.matrixChanges, data.room_is_paused);
             });
@@ -219,9 +219,9 @@ var Player = function(scene, params){
     /**
      * Отправка координат на сервер
      * */
-    this.sendPos = function(){
+    this.sendPos = function () {
         var time = Date.now();
-        if(this.canBroadcast && time-this.recieveTime>=this.recieveDelta){
+        if (this.canBroadcast && time - this.recieveTime >= this.recieveDelta) {
             this.recieveTime = time;
             this.socket.send('coors', {
                 x: this.x,
@@ -235,7 +235,7 @@ var Player = function(scene, params){
      * @param {Cell} cell ячейка
      * @param {Number} value значение
      * */
-    this.changeMatrix = function(cell, value){
+    this.changeMatrix = function (cell, value) {
         this.socket.send('changeMatrix', {
             cell: cell.getData(),
             value: value

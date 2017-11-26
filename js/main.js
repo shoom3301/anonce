@@ -1,4 +1,6 @@
 window.addEventListener('load', function () {
+    var serverUrl = 'ws://localhost:8801';
+
     //сцена
     var scene = new Scene({
         canvas: 'scene',
@@ -10,8 +12,8 @@ window.addEventListener('load', function () {
 
     var started = false;
     //При клике на кнопку "присоединиться"
-    $('#connect_to_room').click(function(){
-        if(!started){
+    $('#connect_to_room').click(function () {
+        if (!started) {
             started = true;
             //Игрок
             var player = new Player(scene, {
@@ -29,9 +31,10 @@ window.addEventListener('load', function () {
             });
 
             //коннектимся к серверу
-            player.connect('ws://2.132.137.195:8801', $('#room_name').val(), $('#map').val(), function(lvl, shadows, matrixChanges, room_is_paused){
+            player.connect(serverUrl, $('#room_name').val(), $('#map').val(), function (lvl, shadows, matrixChanges, room_is_paused) {
                 window.game = new Game(scene, player);
-                game.getLevel(lvl, function(){
+
+                game.getLevel(lvl, function () {
                     game.initConnection(lvl, player, shadows, matrixChanges, room_is_paused);
                 });
             });

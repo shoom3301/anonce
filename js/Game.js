@@ -8,7 +8,7 @@
  * @param {Player} player ведущий игрок игры
  * @param {Array} levels уровни игры
  * */
-var Game = function (scene, player, levels){
+var Game = function (scene, player, levels) {
     //номер текущего уровеня
     this.currentLevel = 0;
     //текущий уровень
@@ -39,11 +39,11 @@ var Game = function (scene, player, levels){
      * */
     this.loadLevel = function (level) {
         level.afterWin = function () {
-            th.eachPlayers(function(player){
+            th.eachPlayers(function (player) {
                 player.canRender = false;
             });
 
-            setTimeout(function(){
+            setTimeout(function () {
 
             }, 2000);
         };
@@ -52,11 +52,11 @@ var Game = function (scene, player, levels){
             th.player.x = th.level.playerPos[0];
             th.player.y = th.level.playerPos[1];
 
-            th.eachPlayers(function(player){
+            th.eachPlayers(function (player) {
                 player.canRender = false;
             });
 
-            setTimeout(function(){
+            setTimeout(function () {
                 th.player.canRender = true;
                 th.level.removeForRender(th.level.losePic);
             }, 800);
@@ -64,7 +64,7 @@ var Game = function (scene, player, levels){
 
         this.scene.setLevel(level);
 
-        this.eachPlayers(function(player){
+        this.eachPlayers(function (player) {
             player.setLevel(level);
         });
 
@@ -79,27 +79,28 @@ var Game = function (scene, player, levels){
     this.start = function () {
         this.started = true;
         var fps = document.getElementById('fps');
+
         function draw() {
-            if(th.canDraw){
+            if (th.canDraw) {
                 th.scene.ctx.save();
                 th.scene.mapCenter(th.player);
                 th.scene.clear();
                 th.scene.level.drawMatrix();
                 th.scene.level.render();
 
-                th.eachPlayers(function(player){
+                th.eachPlayers(function (player) {
                     player.render();
                 });
 
-                for(var v in th.shadows){
-                    if(th.shadows.hasOwnProperty(v) && th.shadows[v]) th.shadows[v].render();
+                for (var v in th.shadows) {
+                    if (th.shadows.hasOwnProperty(v) && th.shadows[v]) th.shadows[v].render();
                 }
 
                 th.scene.ctx.restore();
             }
             requestAnimationFrame(draw);
             var time = Date.now();
-            fps.value = time-th.time;
+            fps.value = time - th.time;
             th.time = time;
         }
 
@@ -112,16 +113,17 @@ var Game = function (scene, player, levels){
      * @param {Function} cb callback загрузки уровня
      * */
     this.getLevel = function (name, cb) {
-        include('levels/' + name + '.js?'+Date.now(), 'js', function(){
+        include('levels/' + name + '.js?' + Date.now(), 'js', function () {
             window[name].init(cb);
-        }, function () { });
+        }, function () {
+        });
     };
 
     /**
      * Добавление игрока на уровень
      * @param {Player} player игрок
      * */
-    this.addPlayer = function(player){
+    this.addPlayer = function (player) {
         this.players.push(player);
         player.setLevel(this.level);
     };
@@ -130,8 +132,8 @@ var Game = function (scene, player, levels){
      * Добавление тени на уровень
      * @param {Array} shadow тень
      * */
-    this.addShadow = function(shadow){
-        if(!this.shadows[shadow[0]]){
+    this.addShadow = function (shadow) {
+        if (!this.shadows[shadow[0]]) {
             this.shadows[shadow[0]] = new Shadow(this.scene, this.level, {
                 id: shadow[0],
                 name: shadow[1],
@@ -145,7 +147,7 @@ var Game = function (scene, player, levels){
      * Удаление тени
      * @param {Number} id имя тени
      * */
-    this.removeShadow = function(id){
+    this.removeShadow = function (id) {
         delete this.shadows[id];
         this.shadows[id] = null;
     };
@@ -154,7 +156,7 @@ var Game = function (scene, player, levels){
      * Перебор массива игроков
      * @param {Function} func callback
      * */
-    this.eachPlayers = function(func){
+    this.eachPlayers = function (func) {
         for (var i = 0; i < this.players.length; i++) {
             func.apply(this, [this.players[i]]);
         }
@@ -163,7 +165,7 @@ var Game = function (scene, player, levels){
     /**
      * Пауза игры
      * */
-    this.pause = function(){
+    this.pause = function () {
         this.canDraw = false;
         var ctx = this.scene.ctx;
         this.scene.clear();
@@ -183,58 +185,58 @@ var Game = function (scene, player, levels){
      * @param {Array} shadows тени
      * @param {Array} matrixChanges изменеия матрицы
      * */
-    this.initConnection = function(lvl, player, shadows, matrixChanges, room_is_paused){
-        this.level = window[lvl].init(function(){
+    this.initConnection = function (lvl, player, shadows, matrixChanges, room_is_paused) {
+        this.level = window[lvl].init(function () {
             th.loadLevel(this);
-            for(var i=0; i<matrixChanges.length; i++){
-                if(matrixChanges[i]){
-                    for(var v=0; v<matrixChanges[i].length; v++){
-                        if(typeof matrixChanges[i][v] == 'number'){
+            for (var i = 0; i < matrixChanges.length; i++) {
+                if (matrixChanges[i]) {
+                    for (var v = 0; v < matrixChanges[i].length; v++) {
+                        if (typeof matrixChanges[i][v] === 'number') {
                             this.changeMatrix(player, i, v, matrixChanges[i][v], true);
                         }
                     }
                 }
             }
             th.start();
-            if(room_is_paused){
+            if (room_is_paused) {
                 th.pause();
-            }else{
+            } else {
                 player.canBroadcast = true;
             }
         });
 
-        for(var i=0; i<shadows.length; i++){
+        for (var i = 0; i < shadows.length; i++) {
             this.addShadow(shadows[i]);
         }
 
         player.socket
-            .on('newPlayer', function(data){
+            .on('newPlayer', function (data) {
                 th.addShadow(data.player);
             })
-            .on('leavePlayer', function(data){
+            .on('leavePlayer', function (data) {
                 th.removeShadow(data.player);
             })
-            .on('coors', function(data){
-                if(th.shadows[data.shadow]){
+            .on('coors', function (data) {
+                if (th.shadows[data.shadow]) {
                     th.shadows[data.shadow].addCoors(data.x, data.y);
                 }
             })
-            .on('matrixChange', function(data){
+            .on('matrixChange', function (data) {
                 th.level.changeMatrix(player, data.row, data.col, data.value, true);
             })
-            .on('roomOff', function(){
+            .on('roomOff', function () {
                 th.canDraw = false;
                 th.scene.clear();
             })
-            .on('level_passed', function(data){
+            .on('level_passed', function (data) {
                 th.level.onWin(data.player);
-            }).on('change_level', function(data){
-                th.getLevel(data.level, function(){
-                    th.level.removeForRender(th.level.winPic);
-                    th.level = null;
-                    th.loadLevel(this);
-                });
+            }).on('change_level', function (data) {
+            th.getLevel(data.level, function () {
+                th.level.removeForRender(th.level.winPic);
+                th.level = null;
+                th.loadLevel(this);
             });
+        });
 
         return this;
     };

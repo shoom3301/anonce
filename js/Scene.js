@@ -77,7 +77,7 @@ var Scene = function (params) {
      * Центрирование карты относительно объекта
      * */
     this.mapCenter = function (obj) {
-        if(this.level){
+        if (this.level) {
             var offsetX = obj.x + (obj.width / 2) - this.width / 2;
             var offsetY = obj.y + (obj.height / 2) - this.height / 2;
 
@@ -98,7 +98,7 @@ var Scene = function (params) {
      * Установка уровня
      * @param {Level} level уровень
      * */
-    this.setLevel = function(level){
+    this.setLevel = function (level) {
         this.level = level;
         this.level.scene = this;
         this.level.ctx = this.ctx;
