@@ -18,7 +18,7 @@ var default_level = function (matrix, onload) {
                 if (check) {
                     this.destroy();
                     player.level.bonusCount--;
-                    if (player.level.bonusCount == 0) {
+                    if (player.level.bonusCount === 0) {
                         player.level.openGate();
                     }
                 }
@@ -27,7 +27,7 @@ var default_level = function (matrix, onload) {
                 this.level.bonusCount++;
             }
         },
-        //вороты выхода с уровня
+        //ворота выхода с уровня
         5: {
             name: 'gate',
             check: function (player, check) {
@@ -53,8 +53,8 @@ var default_level = function (matrix, onload) {
     };
 
     return new Level(matrix, cellConstructors, {
-        yoba: '../images/yoba.png',
-        yoba2: '../images/yoba2.png',
+        kolobok: '../images/kolobok.png',
+        kolobok2: '../images/kolobok2.png',
         wall: '../images/wall.png',
         passiveCells: '../images/default.png',
         gate_open: '../images/gate_open.png',

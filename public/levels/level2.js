@@ -88,8 +88,8 @@ var level2 = {
         9: 'player'
     },
     sprites: {
-        yoba: 'images/yoba.png',
-        yoba2: 'images/yoba2.png',
+        kolobok: 'images/kolobok.png',
+        kolobok2: 'images/kolobok2.png',
         wall: 'images/wall.png',
         passiveCells: 'images/default.png',
         gate_open: 'images/gate_open.png',
@@ -104,6 +104,6 @@ var level2 = {
     }
 };
 
-if (typeof module != 'undefined') {
+if (typeof module !== 'undefined') {
     module.exports = level2;
 }

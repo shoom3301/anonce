@@ -3,7 +3,7 @@
  */
 
 if (typeof require !== 'undefined') {
-    var Cell = require('../js/Cell.js');
+    var Cell = require('./Cell.js');
 }
 
 /**

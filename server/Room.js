@@ -129,7 +129,7 @@ var Room = function (name, owner, start_level, levels) {
     this.loadLevel = function (level_name) {
         console.log('Level of room `' + this.name + '` changed to `' + level_name + '`');
         this.levelName = level_name;
-        this.level = require('../levels/' + level_name + '.js').init().load();
+        this.level = require('../public/levels/' + level_name + '.js').init().load();
         return this;
     };
 

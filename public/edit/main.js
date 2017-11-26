@@ -35,7 +35,7 @@ var sprites = {
     wall: new Sprite('../images/wall.png', 'wall', on_srite_load),
     gate_close: new Sprite('../images/gate_close.png', 'gate_close', on_srite_load),
     thorn: new Sprite('../images/thorn.png', 'thorn', on_srite_load),
-    player: new Sprite('../images/yoba.png', 'player', on_srite_load)
+    player: new Sprite('../images/kolobok.png', 'player', on_srite_load)
 };
 
 var clear_sprite = new Sprite('../images/clear.png', 'clear');
@@ -148,14 +148,14 @@ $(window).load(function () {
     }, false);
 
     window.addEventListener('keydown', function (e) {
-        if (e.keyCode == 16) {
+        if (e.keyCode === 16) {
             clear_mode = true;
         }
     });
 
     //при отжатии клавиши
     window.addEventListener('keyup', function (e) {
-        if (e.keyCode == 16) {
+        if (e.keyCode === 16) {
             clear_mode = false;
         }
     });
@@ -175,7 +175,7 @@ $(window).load(function () {
         offsetY: 32,
         width: 32,
         height: 32,
-        name: 'yoba',
+        name: 'kolobok',
         controls: {
             jump: 87,
             right: 68,
@@ -189,7 +189,7 @@ $(window).load(function () {
         offsetY: 32,
         width: 32,
         height: 32,
-        name: 'yoba2',
+        name: 'kolobok2',
         controls: {
             jump: 38,
             right: 39,

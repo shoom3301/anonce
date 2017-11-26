@@ -58,7 +58,7 @@ var Player = function (scene, params) {
      * Отрисовка игрока на сцене
      * */
     this._render = function () {
-        this.ctx.drawImage(this.level.sprites.yoba, this.x, this.y);
+        this.ctx.drawImage(this.level.sprites.kolobok, this.x, this.y);
         this.ctx.font = "13px Arial";
         this.ctx.fillStyle = "#ffffff";
         this.ctx.textAlign = "center";
