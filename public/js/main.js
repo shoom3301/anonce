@@ -24,9 +24,9 @@ window.addEventListener('load', function () {
                 height: 32,
                 name: $('#my_name').val(),
                 controls: {
-                    jump: 87,
-                    right: 68,
-                    left: 65
+                    jump: 38, // 87
+                    right: 39, // 68
+                    left: 37 // 65
                 }
             });
 
