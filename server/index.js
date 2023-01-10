@@ -1,6 +1,14 @@
-/**
- * Created by Shoom on 14.05.15.
- */
+const static = require('node-static');
+const http = require('http');
+
+const file = new static.Server('./public');
+
+http.createServer(function (request, response) {
+    request.addListener('end', function () {
+        file.serve(request, response);
+    }).resume();
+}).listen(process.env.PORT || 3000);
+
 Array.prototype.remove = function (i) {
     this.splice(this.indexOf(i), 1);
     return this;
