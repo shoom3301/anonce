@@ -1,13 +1,10 @@
-const static = require('node-static');
-const http = require('http');
+const express = require('express')
+const app = express()
+const port = process.env.PORT || 80
 
-const file = new static.Server('./public');
+app.use(express.static('./public'));
 
-http.createServer(function (request, response) {
-    request.addListener('end', function () {
-        file.serve(request, response);
-    }).resume();
-}).listen(process.env.PORT || 80);
+const server = app.listen(port)
 
 Array.prototype.remove = function (i) {
     this.splice(this.indexOf(i), 1);
@@ -16,7 +13,7 @@ Array.prototype.remove = function (i) {
 
 var App = require('./App.js');
 
-var app = new App(8801);
-app.createServer();
+var gameApp = new App(server);
+gameApp.createServer();
 
 console.log('Server started!');

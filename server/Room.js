@@ -74,7 +74,7 @@ var Room = function (name, owner, start_level, levels) {
     this.broadcast = function (command, data, plr) {
         this.eachPlayers(function (player) {
             if (!plr || plr.id !== player.id) {
-                player.socket.sendText(JSON.stringify({
+                player.socket.send(JSON.stringify({
                     command: command,
                     data: data
                 }));

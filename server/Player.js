@@ -39,7 +39,7 @@ var Player = function (name, socket) {
      * Инициализация игрока
      * */
     this.init = function () {
-        this.socket.sendText(JSON.stringify({
+        this.socket.send(JSON.stringify({
             command: 'init',
             data: {
                 id: this.id,

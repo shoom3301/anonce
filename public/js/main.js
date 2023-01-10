@@ -1,5 +1,5 @@
 window.addEventListener('load', function () {
-    var serverUrl = 'ws://cowrunner.herokuapp.com:8801';
+    var serverUrl = 'ws://cowrunner.herokuapp.com';
 
     //сцена
     var scene = new Scene({

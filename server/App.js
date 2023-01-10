@@ -2,15 +2,16 @@
  * Created by Shoom on 16.05.15.
  */
 
+const { Server } = require('ws');
 var ws = require("nodejs-websocket");
 var Room = require("./Room.js");
 var Player = require("./Player.js");
 
 /**
  * Сервер-приложение
- * @param {Number} port порт на котором работает сервер
+ * @param server
  * */
-var App = function (port) {
+var App = function (server) {
     //комнаты
     this.rooms = {};
     //ws сервер
@@ -21,23 +22,12 @@ var App = function (port) {
      * */
     this.createServer = function () {
         var th = this;
-        this.server = ws.createServer(function (socket) {
-            //при получении данных от клиента, вызываем соответствующую команду
-            socket.on("text", function (str) {
-                var info = JSON.parse(str);
-                var command = info.command;
+        const wss = new Server({ server });
 
-                if (th.commands[command]) {
-                    var room = (info.room && th.rooms[info.room]) ? th.rooms[info.room] : null;
-                    var player = (room && typeof info.player !== 'undefined') ? room.players[info.player] : null;
-                    th.commands[command].apply(th, [socket, room, player, info]);
-                }
-            });
-
-            //при закрытии соединения удаляем игрока
-            socket.on("close", function () {
-                var room = socket.player.room;
-                var player = socket.player;
+        wss.on('connection', (ws) => {
+            ws.on('close', () => {
+                var room = ws.player.room;
+                var player = ws.player;
                 if (room) {
                     console.log('Player `' + player.name + '` is disconnected from the room `' + room.name + '`');
                     room.removePlayer(player);
@@ -50,12 +40,18 @@ var App = function (port) {
                 }
             });
 
-            //если не вешать слушатель на это событие, приложение падает в ошибку
-            socket.on("error", function () {
+            ws.on('message', (data) => {
+                var info = JSON.parse(data.toString());
+                var command = info.command;
+
+                if (th.commands[command]) {
+                    var room = (info.room && th.rooms[info.room]) ? th.rooms[info.room] : null;
+                    var player = (room && typeof info.player !== 'undefined') ? room.players[info.player] : null;
+                    th.commands[command].apply(th, [ws, room, player, info]);
+                }
             });
         });
 
-        this.server.listen(port);
         return this;
     };
 
