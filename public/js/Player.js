@@ -2,6 +2,8 @@
  * Created by Shoom on 07.05.15.
  */
 
+var moveThreshold = 0.5
+var timeThreshold = 15 // ms
 /**
  * Класс игрока
  * @param scene {Scene} сцена на который существует игрок
@@ -15,6 +17,7 @@ var Player = function (scene, params) {
     this.canBroadcast = false;
     //предыдущая позиция
     this.oldpos = {x: 0, y: 0};
+    this.lastMoveTimestamp = 0
     //Смещение по X
     this.offsetX = params.offsetX || 0;
     //Смещение по Y
@@ -148,9 +151,16 @@ var Player = function (scene, params) {
         this.y = modRound(this.y, 3);
 
         var ydiff = this.oldpos.y - this.y;
-        if (this.oldpos.x !== this.x || (ydiff > 0.5 || ydiff < -0.5)) {
+        var xdiff = this.oldpos.x - this.x;
+
+        var xIsValid = (xdiff > moveThreshold || xdiff < -moveThreshold)
+        var yIsValid = (ydiff > moveThreshold || ydiff < -moveThreshold)
+        var inTimeThreshold = Date.now() - this.lastMoveTimestamp > timeThreshold
+
+        if ((xIsValid || yIsValid) && inTimeThreshold) {
             this.oldpos.x = this.x;
             this.oldpos.y = this.y;
+            this.lastMoveTimestamp = Date.now()
             this.sendPos();
         }
     };
