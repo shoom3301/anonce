@@ -7,7 +7,7 @@ http.createServer(function (request, response) {
     request.addListener('end', function () {
         file.serve(request, response);
     }).resume();
-}).listen(process.env.PORT || 3000);
+}).listen(process.env.PORT || 80);
 
 Array.prototype.remove = function (i) {
     this.splice(this.indexOf(i), 1);
