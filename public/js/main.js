@@ -1,5 +1,6 @@
 window.addEventListener('load', function () {
-    var serverUrl = 'ws://' + location.host;
+    var protocol = location.host === 'localhost' ? 'ws' : 'wss'
+    var serverUrl = protocol + '://' + location.host;
 
     //сцена
     var scene = new Scene({

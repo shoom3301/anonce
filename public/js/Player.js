@@ -24,11 +24,11 @@ var Player = function (scene, params) {
     //Высота
     this.height = params.height || 32;
     //Скорость
-    this.speed = 5;
+    this.speed = 5.4;
     //Трение
-    this.friction = 0.75;
+    this.friction = 0.85;
     //Гравитация
-    this.gravity = 0.3;
+    this.gravity = 0.38;
     //Скорость по X
     this.velX = 0;
     //Скорость по Y
