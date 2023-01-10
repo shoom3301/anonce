@@ -13,7 +13,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "npm-run-all --parallel start:server start:client",
+    "start:all": "npm-run-all --parallel start:server start:client",
+    "start": "npm run start:server",
     "start:server": "node server/index.js",
     "start:client": "node_modules/node-static/bin/cli.js public",
     "test": "echo \"Error: no test specified\" && exit 1"
