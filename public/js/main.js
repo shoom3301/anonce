@@ -2,6 +2,10 @@ window.addEventListener('load', function () {
     var protocol = location.host === 'localhost' ? 'ws' : 'wss'
     var serverUrl = protocol + '://' + location.host;
 
+    // TODO: change roomId when too many players are connected
+    var roomId = 'cowrunner'
+    var levelId = 'level1'
+
     //сцена
     var scene = new Scene({
         canvas: 'scene',
@@ -13,7 +17,7 @@ window.addEventListener('load', function () {
 
     var started = false;
     //При клике на кнопку "присоединиться"
-    $('#connect_to_room').click(function () {
+    $('#joining-button').click(function () {
         if (!started) {
             started = true;
             //Игрок
@@ -23,7 +27,7 @@ window.addEventListener('load', function () {
                 offsetY: 32,
                 width: 32,
                 height: 32,
-                name: $('#my_name').val(),
+                name: nickNames[getRandomNumber(0, nickNames.length - 1)],
                 controls: {
                     jump: 38, // 87
                     right: 39, // 68
@@ -32,8 +36,11 @@ window.addEventListener('load', function () {
             });
 
             //коннектимся к серверу
-            player.connect(serverUrl, $('#room_name').val(), $('#map').val(), function (lvl, shadows, matrixChanges, room_is_paused) {
+            player.connect(serverUrl, roomId, levelId, function (lvl, shadows, matrixChanges, room_is_paused) {
                 window.game = new Game(scene, player);
+
+                document.getElementById('joining-screen').style.display = 'none'
+                scene.domRoot.style.display = 'block'
 
                 game.getLevel(lvl, function () {
                     game.initConnection(lvl, player, shadows, matrixChanges, room_is_paused);

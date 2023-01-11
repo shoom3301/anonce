@@ -130,7 +130,7 @@ var App = function (server) {
                     room.nextLevel();
                     room.broadcast('change_level', {level: room.levelName});
                     room.paused = false;
-                }, 10000);
+                }, 6000);
             }
         }
     };

@@ -37,7 +37,8 @@ var Scene = function (params) {
     this.offsetY = 0;
 
     //2D контекст
-    this.ctx = document.getElementById(params.canvas).getContext('2d');
+    this.domRoot = document.getElementById(params.canvas)
+    this.ctx = this.domRoot.getContext('2d');
     this.ctx.canvas.width = params.view.width;
     this.ctx.canvas.height = params.view.height;
 

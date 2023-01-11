@@ -1,26 +1,4 @@
-﻿/*
-@font-face {
-      font-family: "geometric";
-      src: url("fonts/kbl.eot");
-      src: url("fonts/kbl.eot?#iefix") format("embedded-opentype"),
-      url("fonts/kbl.woff") format("woff"),
-      url("fonts/kbl.ttf") format("truetype"),
-      url("fonts/kbl.svg#OctinSports") format("svg");
-      font-weight: normal;
-      font-style: normal;
-   }
-   
-*::selection{
-background-color: #d20000;
-color: #fff;
-}
-
-*::-moz-selection{
-background-color: #d20000;
-color: #fff;
-} */
-
-body, html {
+﻿body, html {
     margin: 0;
     padding: 0;
     font-size: 14px;
@@ -39,8 +17,35 @@ body {
 
 #scene {
     background-color: #ffffff;
-    margin: 50px auto;
-    display: block;
+    margin: 0 auto;
+    display: none;
+}
+
+#joining-screen {
+    position: relative;
+    width: 840px;
+    height: 480px;
+    margin: 0 auto;
+    background: url('../images/cow-screen.jpg');
+}
+
+#joining-button {
+    position: absolute;
+    left: 40%;
+    top: 80%;
+    cursor: pointer;
+    background: #000;
+    color: #fff;
+    font-weight: 800;
+    font-size: 30px;
+    border: 2px solid #fff;
+    padding: 15px 50px;
+    box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+}
+
+#joining-button:hover {
+    box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+    margin: 4px 0 0 4px;
 }
 
 #createRoom {

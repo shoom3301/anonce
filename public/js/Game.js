@@ -100,7 +100,9 @@ var Game = function (scene, player, levels) {
             }
             requestAnimationFrame(draw);
             var time = Date.now();
-            fps.value = time - th.time;
+            if (fps) {
+                fps.value = time - th.time;
+            }
             th.time = time;
         }
 
