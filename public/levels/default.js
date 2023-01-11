@@ -55,6 +55,7 @@ var default_level = function (matrix, onload) {
     return new Level(matrix, cellConstructors, {
         kolobok: '../images/kolobok.png',
         kolobok2: '../images/kolobok2.png',
+        kolobokLeft: '../images/kolobok-left.png',
         wall: '../images/wall.png',
         passiveCells: '../images/default.png',
         gate_open: '../images/gate_open.png',
