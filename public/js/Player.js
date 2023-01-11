@@ -2,8 +2,8 @@
  * Created by Shoom on 07.05.15.
  */
 
-var moveThreshold = 0.5
-var timeThreshold = 15 // ms
+var moveThreshold = 1
+var timeThreshold = 20 // ms
 /**
  * Класс игрока
  * @param scene {Scene} сцена на который существует игрок
