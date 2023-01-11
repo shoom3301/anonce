@@ -3,7 +3,7 @@
  */
 
 var moveThreshold = 1
-var timeThreshold = 20 // ms
+var timeThreshold = 25 // ms
 /**
  * Класс игрока
  * @param scene {Scene} сцена на который существует игрок
@@ -56,8 +56,6 @@ var Player = function (scene, params) {
     this.canRender = true;
     //комната
     this.room = null;
-    this.recieveTime = Date.now();
-    this.recieveDelta = 20;
 
     /**
      * Отрисовка игрока на сцене
@@ -155,12 +153,10 @@ var Player = function (scene, params) {
 
         var xIsValid = (xdiff > moveThreshold || xdiff < -moveThreshold)
         var yIsValid = (ydiff > moveThreshold || ydiff < -moveThreshold)
-        var inTimeThreshold = Date.now() - this.lastMoveTimestamp > timeThreshold
 
-        if ((xIsValid || yIsValid) && inTimeThreshold) {
+        if (xIsValid || yIsValid) {
             this.oldpos.x = this.x;
             this.oldpos.y = this.y;
-            this.lastMoveTimestamp = Date.now()
             this.sendPos();
         }
     };
@@ -239,8 +235,8 @@ var Player = function (scene, params) {
      * */
     this.sendPos = function () {
         var time = Date.now();
-        if (this.canBroadcast && time - this.recieveTime >= this.recieveDelta) {
-            this.recieveTime = time;
+        if (this.canBroadcast && time - this.lastMoveTimestamp >= timeThreshold) {
+            this.lastMoveTimestamp = time;
             this.socket.send('coors', {
                 x: this.x,
                 y: this.y
