@@ -13,6 +13,8 @@ var Player = function (scene, params) {
     this.id = 0;
     //@abstract
     this.socket = null;
+    // Player color
+    this.color = getRandomColor();
     //можно ли отсылать серверу свои координаты
     this.canBroadcast = false;
     //предыдущая позиция
@@ -65,6 +67,7 @@ var Player = function (scene, params) {
             ? this.level.sprites.kolobok
             : this.level.sprites.kolobokLeft;
 
+        this.ctx.filter = 'drop-shadow(0 0 4px ' + this.color + ')';
         this.ctx.drawImage(sprite, this.x, this.y);
         this.ctx.font = "13px Arial";
         this.ctx.fillStyle = "#ffffff";
