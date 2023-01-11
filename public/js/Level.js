@@ -6,8 +6,8 @@ if (typeof require !== 'undefined') {
     var Cell = require('./Cell.js');
 }
 
-const errorSound = typeof Audio === 'undefined' ? null : new Audio('sound/error.mp3')
-const successSound = typeof Audio === 'undefined' ? null : new Audio('sound/success.mp3')
+const errorSound = typeof Audio === 'undefined' ? null : new Audio('/sound/error.mp3')
+const successSound = typeof Audio === 'undefined' ? null : new Audio('/sound/success.mp3')
 
 /**
  * Уровень в игре

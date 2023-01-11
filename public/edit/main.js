@@ -85,7 +85,9 @@ $(window).load(function () {
     var can_draw = false;
     var clear_mode = false;
 
+    scene.style.display = 'block';
     window.res = document.getElementById('res');
+
     res.addEventListener('change', function () {
         matrix = JSON.parse(res.value);
         max_y = 0;
