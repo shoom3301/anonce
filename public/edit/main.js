@@ -139,16 +139,6 @@ $(window).load(function () {
         can_draw = false;
     }, false);
 
-    scene.addEventListener('mousewheel', function (e) {
-        var el = current_block.el[(e.wheelDelta > 0 ? 'next' : 'previous') + 'Sibling'];
-        if (el) {
-            el.onclick();
-        }
-
-        e.preventDefault();
-        return false;
-    }, false);
-
     window.addEventListener('keydown', function (e) {
         if (e.keyCode === 16) {
             clear_mode = true;
