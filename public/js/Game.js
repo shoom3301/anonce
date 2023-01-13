@@ -88,6 +88,7 @@ var Game = function (scene, player, levels) {
                 th.scene.level.drawMatrix();
                 th.scene.level.render();
 
+                th.scene.ctx.restore();
                 th.scene.ctx.save();
                 th.eachPlayers(function (player) {
                     player.render();
@@ -101,6 +102,7 @@ var Game = function (scene, player, levels) {
 
                 th.scene.ctx.restore();
             }
+
             requestAnimationFrame(draw);
             var time = Date.now();
             if (fps) {
