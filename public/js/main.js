@@ -3,7 +3,7 @@ window.addEventListener('load', function () {
     var serverUrl = protocol + '://' + location.host;
 
     // TODO: change roomId when too many players are connected
-    var roomId = 'cowrunner'
+    var roomId = (new URLSearchParams(location.search)).get('room') || 'cowrunner'
     var levelId = 'level1'
 
     //сцена
