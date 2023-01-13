@@ -92,8 +92,21 @@ var Scene = function (params) {
     };
 
     this.listenEvents = function () {
+        let isSceneFocused = false
+
+        this.domRoot.addEventListener('mouseenter', () => {
+            isSceneFocused = true
+        })
+
+        this.domRoot.addEventListener('mouseleave', () => {
+            isSceneFocused = false
+        })
+
         window.addEventListener('keydown', function (e) {
-            e.preventDefault();
+            if (isSceneFocused) {
+                e.preventDefault();
+            }
+
             for (var i = 0; i < th._events.keydown.length; i++) {
                 th._events.keydown[i](e.keyCode, e);
             }
