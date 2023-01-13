@@ -45,9 +45,8 @@ var Shadow = function (scene, level, params) {
             ? this.level.sprites.kolobok
             : this.level.sprites.kolobokLeft;
 
-        this.ctx.filter = 'drop-shadow(0 0 4px ' + this.color + ')';
         this.ctx.drawImage(sprite, Math.floor(this.x), Math.floor(this.y));
-        this.ctx.filter = '';
+
         this.ctx.font = "13px Arial";
         this.ctx.fillStyle = "#ffffff";
         this.ctx.textAlign = "center";
