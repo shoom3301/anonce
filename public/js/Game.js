@@ -90,12 +90,14 @@ var Game = function (scene, player, levels) {
 
                 th.scene.ctx.restore();
                 th.scene.ctx.save();
+                th.scene.mapCenter(th.player);
                 th.eachPlayers(function (player) {
                     player.render();
                 });
                 th.scene.ctx.restore();
 
                 th.scene.ctx.save();
+                th.scene.mapCenter(th.player);
                 for (var v in th.shadows) {
                     if (th.shadows.hasOwnProperty(v) && th.shadows[v]) th.shadows[v].render();
                 }
