@@ -9,20 +9,6 @@
 var Scene = function (params) {
     var th = this;
 
-    //при нажатии клавиши
-    window.addEventListener('keydown', function (e) {
-        for (var i = 0; i < th._events.keydown.length; i++) {
-            th._events.keydown[i](e.keyCode, e);
-        }
-    });
-
-    //при отжатии клавиши
-    window.addEventListener('keyup', function (e) {
-        for (var i = 0; i < th._events.keyup.length; i++) {
-            th._events.keyup[i](e.keyCode, e);
-        }
-    });
-
     //события сцены
     this._events = {
         'keydown': [],
@@ -104,4 +90,21 @@ var Scene = function (params) {
         this.level.scene = this;
         this.level.ctx = this.ctx;
     };
+
+    this.listenEvents = function () {
+        window.addEventListener('keydown', function (e) {
+            e.preventDefault();
+            for (var i = 0; i < th._events.keydown.length; i++) {
+                th._events.keydown[i](e.keyCode, e);
+            }
+        });
+
+        window.addEventListener('keyup', function (e) {
+            for (var i = 0; i < th._events.keyup.length; i++) {
+                th._events.keyup[i](e.keyCode, e);
+            }
+        });
+    }
+
+    this.listenEvents();
 };
