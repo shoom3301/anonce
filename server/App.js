@@ -71,7 +71,7 @@ var App = function (server) {
             var new_player = new Player(params.data.name, socket);
 
             if (!room) {
-                this.rooms[params.room] = new Room(params.room, new_player, params.data.level, ['level1', 'level2', 'level3']);
+                this.rooms[params.room] = new Room(params.room, new_player, params.data.level, ['level1', 'level2', 'level3', 'level4', 'level5']);
                 console.log('Room `' + params.room + '` created! Owner - ' + new_player.name + '.');
             }
 
