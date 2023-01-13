@@ -88,10 +88,13 @@ var Game = function (scene, player, levels) {
                 th.scene.level.drawMatrix();
                 th.scene.level.render();
 
+                th.scene.ctx.save();
                 th.eachPlayers(function (player) {
                     player.render();
                 });
+                th.scene.ctx.restore();
 
+                th.scene.ctx.save();
                 for (var v in th.shadows) {
                     if (th.shadows.hasOwnProperty(v) && th.shadows[v]) th.shadows[v].render();
                 }

@@ -29,6 +29,8 @@ var Shadow = function (scene, level, params) {
     //id
     this.id = params.id;
     //Можно ли рендерить игрока
+    // Horizontal direction, 1 - right, -1 - left
+    this.direction = 1;
     this.canRender = true;
 
     /**
@@ -39,8 +41,12 @@ var Shadow = function (scene, level, params) {
             return
         }
 
+        const sprite = this.direction === 1
+            ? this.level.sprites.kolobok
+            : this.level.sprites.kolobokLeft;
+
         this.ctx.filter = 'drop-shadow(0 0 4px ' + this.color + ')';
-        this.ctx.drawImage(this.level.sprites.kolobok, Math.floor(this.x), Math.floor(this.y));
+        this.ctx.drawImage(sprite, Math.floor(this.x), Math.floor(this.y));
         this.ctx.filter = '';
         this.ctx.font = "13px Arial";
         this.ctx.fillStyle = "#ffffff";
@@ -59,6 +65,7 @@ var Shadow = function (scene, level, params) {
      * @param {Number} y y
      * */
     this.addCoors = function (x, y) {
+        this.direction = this.x > x ? -1 : 1;
         this.x = x;
         this.y = y;
     };
