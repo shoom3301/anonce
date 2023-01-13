@@ -9,6 +9,7 @@
  * @param params {Object} дополнительные параметры
  * */
 var Shadow = function (scene, level, params) {
+    this.color = getRandomColor();
     //x
     this.x = params.x || 0;
     //y
@@ -34,18 +35,22 @@ var Shadow = function (scene, level, params) {
      * Рендеринг игрока
      * */
     this.render = function () {
-        if (this.canRender) {
-            this.ctx.drawImage(this.level.sprites.kolobok, this.x, this.y);
-            this.ctx.font = "13px Arial";
-            this.ctx.fillStyle = "#ffffff";
-            this.ctx.textAlign = "center";
-            this.ctx.lineWidth = 3;
-            this.ctx.strokeStyle = '#000000';
-            var x = this.x + (this.width / 2);
-            var y = this.y - 5;
-            this.ctx.strokeText(this.name, x, y);
-            this.ctx.fillText(this.name, x, y);
+        if (!this.canRender) {
+            return
         }
+
+        this.ctx.filter = 'drop-shadow(0 0 4px ' + this.color + ')';
+        this.ctx.drawImage(this.level.sprites.kolobok, Math.floor(this.x), Math.floor(this.y));
+        this.ctx.filter = '';
+        this.ctx.font = "13px Arial";
+        this.ctx.fillStyle = "#ffffff";
+        this.ctx.textAlign = "center";
+        this.ctx.lineWidth = 3;
+        this.ctx.strokeStyle = '#000000';
+        var x = this.x + (this.width / 2);
+        var y = this.y - 5;
+        this.ctx.strokeText(this.name, x, y);
+        this.ctx.fillText(this.name, x, y);
     };
 
     /**

@@ -38,7 +38,7 @@ var Scene = function (params) {
 
     //2D контекст
     this.domRoot = document.getElementById(params.canvas)
-    this.ctx = this.domRoot.getContext('2d');
+    this.ctx = this.domRoot.getContext('2d', { alpha: false });
     this.ctx.canvas.width = params.view.width;
     this.ctx.canvas.height = params.view.height;
 
